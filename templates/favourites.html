@@ -1,0 +1,1355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Favourites - EduCast Studio</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --secondary: #3a0ca3;
+            --accent: #4cc9f0;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --success: #4bb543;
+            --danger: #dc3545;
+            --gray: #6c757d;
+            --light-gray: #e9ecef;
+            --warning: #ffc107;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fb;
+            color: var(--dark);
+            line-height: 1.6;
+        }
+        
+        /* Navbar */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .navbar-brand {
+            display: flex;
+            align-items: center;
+            color: white;
+            text-decoration: none;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+        
+        .navbar-brand i {
+            margin-right: 10px;
+            font-size: 1.8rem;
+        }
+        
+        .navbar-nav {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+        
+        .nav-item {
+            position: relative;
+        }
+        
+        .nav-link {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .nav-link:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+        }
+        
+        .nav-link.active {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+        
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            color: white;
+        }
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        /* Main Content */
+        .main-content {
+            margin-top: 80px;
+            padding: 2rem;
+            min-height: calc(100vh - 80px);
+        }
+        
+        /* Page Header */
+        .page-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .page-header h1 {
+            font-size: 2.5rem;
+            color: var(--secondary);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+        }
+        
+        .favorites-count {
+            background: var(--warning);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 1rem;
+            font-weight: 600;
+        }
+        
+        .page-header p {
+            color: var(--gray);
+            font-size: 1.1rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        /* View Toggle */
+        .view-toggle {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+        
+        .view-btn {
+            padding: 10px 20px;
+            border: 2px solid var(--light-gray);
+            background: white;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .view-btn:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
+        
+        .view-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        
+        /* Content Sections */
+        .content-section {
+            display: none;
+        }
+        
+        .content-section.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Books Grid */
+        .books-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1rem;
+        }
+        
+        .book-card {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            border: 2px solid transparent;
+        }
+        
+        .book-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            border-color: var(--warning);
+        }
+        
+        .book-cover {
+            width: 100%;
+            height: 250px;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .book-cover img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .book-content {
+            padding: 1.5rem;
+        }
+        
+        .book-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--secondary);
+            line-height: 1.3;
+        }
+        
+        .book-author {
+            color: var(--primary);
+            margin-bottom: 1rem;
+            font-size: 0.95rem;
+        }
+        
+        .book-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 1rem;
+            border-top: 1px solid var(--light-gray);
+        }
+        
+        .book-genre {
+            background: var(--light-gray);
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            color: var(--gray);
+        }
+        
+        /* Podcast Grid */
+        .podcast-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1rem;
+        }
+        
+        .podcast-card {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            position: relative;
+            border: 2px solid transparent;
+        }
+        
+        .podcast-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            border-color: var(--warning);
+        }
+        
+        .podcast-image {
+            width: 100%;
+            height: 150px;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 2.5rem;
+            position: relative;
+        }
+        
+        .podcast-content {
+            padding: 1.5rem;
+        }
+        
+        .podcast-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--secondary);
+            line-height: 1.3;
+        }
+        
+        .podcast-author {
+            color: var(--primary);
+            margin-bottom: 1rem;
+            font-size: 0.95rem;
+        }
+        
+        .podcast-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--light-gray);
+        }
+        
+        .podcast-duration {
+            background: var(--primary);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
+        .podcast-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .action-button {
+            background: var(--light-gray);
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: var(--dark);
+        }
+        
+        .action-button:hover {
+            background: var(--primary);
+            color: white;
+            transform: scale(1.1);
+        }
+        
+        .action-button.delete:hover {
+            background: var(--danger);
+        }
+        
+        /* Favorite Button */
+        .favorite-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: var(--warning);
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 2;
+            color: white;
+        }
+        
+        .favorite-btn:hover {
+            background: #e0a800;
+            transform: scale(1.1);
+        }
+        
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: var(--gray);
+            grid-column: 1 / -1;
+        }
+        
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: var(--light-gray);
+        }
+        
+        .empty-state h3 {
+            margin-bottom: 0.5rem;
+            color: var(--secondary);
+        }
+        
+        /* Stats Section */
+        .stats-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            background: var(--light);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            font-size: 1.5rem;
+            color: var(--primary);
+        }
+        
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--secondary);
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-label {
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 1rem;
+            }
+            
+            .navbar-nav {
+                gap: 1rem;
+            }
+            
+            .nav-link span {
+                display: none;
+            }
+            
+            .main-content {
+                padding: 1rem;
+            }
+            
+            .books-grid {
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+                gap: 1rem;
+            }
+            
+            .podcast-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-section {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .navbar-brand span {
+                display: none;
+            }
+            
+            .books-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-section {
+                grid-template-columns: 1fr;
+            }
+            
+            .view-toggle {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .view-btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <a href="/" class="navbar-brand">
+            <i class="fas fa-podcast"></i>
+            <span>EduCast Studio</span>
+        </a>
+        
+        <ul class="navbar-nav">
+            <li class="nav-item">
+                <a href="/" class="nav-link">
+                    <i class="fas fa-home"></i>
+                    <span>Home</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="/collections" class="nav-link">
+                    <i class="fas fa-book"></i>
+                    <span>Collections</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="/favourites" class="nav-link active">
+                    <i class="fas fa-heart"></i>
+                    <span>Favourites</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="/podcast-generation" class="nav-link">
+                    <i class="fas fa-headphones"></i>
+                    <span>Generate Podcast</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="/chat" class="nav-link">
+                    <i class="fas fa-comments"></i>
+                    <span>Chat</span>
+                </a>
+            </li>
+        </ul>
+        
+        <div class="user-profile">
+            <div class="user-avatar" id="userAvatar">
+                <i class="fas fa-user"></i>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Page Header -->
+        <div class="page-header">
+            <h1>
+                <i class="fas fa-heart" style="color: var(--warning);"></i>
+                My Favourites
+                <span class="favorites-count" id="favoritesCount">0 items</span>
+            </h1>
+            <p>All your favorite books and podcasts in one place. Manage your collection and enjoy personalized content.</p>
+        </div>
+        
+        <!-- Stats Section -->
+        <div class="stats-section" id="statsSection">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-book"></i>
+                </div>
+                <div class="stat-number" id="favoriteBooksCount">0</div>
+                <div class="stat-label">Favorite Books</div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-headphones"></i>
+                </div>
+                <div class="stat-number" id="favoritePodcastsCount">0</div>
+                <div class="stat-label">Favorite Podcasts</div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div class="stat-number" id="totalListeningTime">0 min</div>
+                <div class="stat-label">Total Listening</div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-star"></i>
+                </div>
+                <div class="stat-number" id="completionRate">0%</div>
+                <div class="stat-label">Completion Rate</div>
+            </div>
+        </div>
+        
+        <!-- View Toggle -->
+        <div class="view-toggle">
+            <button class="view-btn active" data-view="books">
+                <i class="fas fa-book"></i>
+                Favorite Books
+            </button>
+            <button class="view-btn" data-view="podcasts">
+                <i class="fas fa-headphones"></i>
+                Favorite Podcasts
+            </button>
+            <button class="view-btn" data-view="recent">
+                <i class="fas fa-history"></i>
+                Recently Added
+            </button>
+        </div>
+        
+        <!-- Books Section -->
+        <div id="booksSection" class="content-section active">
+            <div class="books-grid" id="favoriteBooksGrid">
+                <!-- Favorite books will be loaded here -->
+            </div>
+        </div>
+        
+        <!-- Podcasts Section -->
+        <div id="podcastsSection" class="content-section">
+            <div class="podcast-grid" id="favoritePodcastsGrid">
+                <!-- Favorite podcasts will be loaded here -->
+            </div>
+        </div>
+        
+        <!-- Recent Section -->
+        <div id="recentSection" class="content-section">
+            <div class="books-grid" id="recentBooksGrid">
+                <!-- Recently added books will be loaded here -->
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Configuration
+        const API_BASE_URL = 'http://localhost:5000';
+        let favoriteBooks = [];
+        let favoritePodcasts = [];
+        let allBooks = [];
+
+        // Fallback books data (same as collections page)
+        const FALLBACK_BOOKS = [
+            {
+                "id": 1,
+                "title": "Pride and Prejudice",
+                "author": "Jane Austen",
+                "year": 1813,
+                "genre": "Romance",
+                "description": "A romantic novel of manners that depicts the emotional development of protagonist Elizabeth Bennet.",
+                "source": "Standard Ebooks",
+                "popularity": 98,
+                "coverUrl": "https://covers.openlibrary.org/b/id/8312261-M.jpg",
+                "pdfUrl": "https://standardebooks.org/ebooks/jane-austen/pride-and-prejudice/downloads/jane-austen_pride-and-prejudice.epub",
+                "summary": "A classic novel exploring themes of love, reputation, and class in early 19th-century England.",
+                "language": "English",
+                "pages": 432,
+                "rating": 4.7,
+                "isFavorite": false
+            },
+            {
+                "id": 2,
+                "title": "The Great Gatsby",
+                "author": "F. Scott Fitzgerald",
+                "year": 1925,
+                "genre": "Fiction",
+                "description": "A story of the mysteriously wealthy Jay Gatsby and his love for the beautiful Daisy Buchanan.",
+                "source": "Public Domain",
+                "popularity": 93,
+                "coverUrl": "https://covers.openlibrary.org/b/id/8226451-M.jpg",
+                "pdfUrl": null,
+                "summary": "An exploration of the American Dream, wealth, and social status during the Jazz Age.",
+                "language": "English",
+                "pages": 218,
+                "rating": 4.5,
+                "isFavorite": false
+            },
+            {
+                "id": 3,
+                "title": "Frankenstein",
+                "author": "Mary Shelley",
+                "year": 1818,
+                "genre": "Horror",
+                "description": "A story about Victor Frankenstein, a young scientist who creates a sapient creature in an unorthodox scientific experiment.",
+                "source": "Standard Ebooks",
+                "popularity": 92,
+                "coverUrl": "https://covers.openlibrary.org/b/id/8231789-M.jpg",
+                "pdfUrl": "https://standardebooks.org/ebooks/mary-shelley/frankenstein/downloads/mary-shelley_frankenstein.epub",
+                "summary": "A Gothic novel that examines themes of creation, responsibility, and the consequences of playing God.",
+                "language": "English",
+                "pages": 280,
+                "rating": 4.6,
+                "isFavorite": false
+            },
+            {
+                "id": 4,
+                "title": "1984",
+                "author": "George Orwell",
+                "year": 1949,
+                "genre": "Science Fiction",
+                "description": "A dystopian social science fiction novel about totalitarian control and thought control.",
+                "source": "Public Domain",
+                "popularity": 96,
+                "coverUrl": "https://covers.openlibrary.org/b/id/7222246-M.jpg",
+                "pdfUrl": null,
+                "summary": "A chilling depiction of a totalitarian future society under constant surveillance.",
+                "language": "English",
+                "pages": 328,
+                "rating": 4.8,
+                "isFavorite": false
+            },
+            {
+                "id": 5,
+                "title": "To Kill a Mockingbird",
+                "author": "Harper Lee",
+                "year": 1960,
+                "genre": "Fiction",
+                "description": "A novel about racial inequality and moral growth in the American South.",
+                "source": "Public Domain",
+                "popularity": 94,
+                "coverUrl": "https://covers.openlibrary.org/b/id/8305837-M.jpg",
+                "pdfUrl": null,
+                "summary": "A powerful exploration of racial injustice and moral growth in the American South.",
+                "language": "English",
+                "pages": 324,
+                "rating": 4.8,
+                "isFavorite": false
+            },
+            {
+                "id": 6,
+                "title": "Wuthering Heights",
+                "author": "Emily Brontë",
+                "year": 1847,
+                "genre": "Gothic Fiction",
+                "description": "A story of the intense, almost demonic love between Catherine Earnshaw and Heathcliff.",
+                "source": "Public Domain",
+                "popularity": 88,
+                "coverUrl": "https://covers.openlibrary.org/b/id/8041460-M.jpg",
+                "pdfUrl": null,
+                "summary": "A tale of obsessive love and revenge set on the Yorkshire moors.",
+                "language": "English",
+                "pages": 416,
+                "rating": 4.4,
+                "isFavorite": false
+            },
+            {
+                "id": 7,
+                "title": "Jane Eyre",
+                "author": "Charlotte Brontë",
+                "year": 1847,
+                "genre": "Romance",
+                "description": "A novel about an orphan girl's growth to adulthood and her love for Mr. Rochester.",
+                "source": "Public Domain",
+                "popularity": 91,
+                "coverUrl": "https://covers.openlibrary.org/b/id/8226512-M.jpg",
+                "pdfUrl": null,
+                "summary": "A coming-of-age story exploring love, independence, and morality.",
+                "language": "English",
+                "pages": 532,
+                "rating": 4.6,
+                "isFavorite": false
+            },
+            {
+                "id": 8,
+                "title": "Brave New World",
+                "author": "Aldous Huxley",
+                "year": 1932,
+                "genre": "Science Fiction",
+                "description": "A dystopian novel about a technologically advanced future society.",
+                "source": "Public Domain",
+                "popularity": 89,
+                "coverUrl": "https://covers.openlibrary.org/b/id/8181921-M.jpg",
+                "pdfUrl": null,
+                "summary": "A vision of a future where technology and conditioning control human society.",
+                "language": "English",
+                "pages": 268,
+                "rating": 4.5,
+                "isFavorite": false
+            }
+        ];
+
+        // Color generator
+        function generateColor() {
+            const colors = [
+                '#4361ee', '#3a0ca3', '#4cc9f0', '#f72585', 
+                '#7209b7', '#3a86ff', '#fb5607', '#ff006e',
+                '#8338ec', '#06d6a0', '#118ab2', '#ef476f'
+            ];
+            return colors[Math.floor(Math.random() * colors.length)];
+        }
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Check if user is logged in
+            const token = localStorage.getItem('token');
+            const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{"name": "Guest"}');
+            
+            if (!token) {
+                window.location.href = '/authentication';
+                return;
+            }
+            
+            // Set user avatar
+            const userAvatar = document.getElementById('userAvatar');
+            userAvatar.innerHTML = currentUser.name.charAt(0).toUpperCase();
+            userAvatar.title = `${currentUser.name} (${currentUser.email || 'User'})`;
+            
+            // Add logout functionality
+            userAvatar.addEventListener('click', function() {
+                if (confirm('Do you want to logout?')) {
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('currentUser');
+                    window.location.href = '/authentication';
+                }
+            });
+            
+            // Load data
+            await loadAllBooks();
+            await loadFavoriteBooks();
+            loadFavoritePodcasts();
+            updateStats();
+            
+            // Setup event listeners
+            setupEventListeners();
+            
+            // Debug: Check what's in localStorage
+            console.log('Current favorites from localStorage:', JSON.parse(localStorage.getItem('bookFavorites') || '[]'));
+        });
+
+        // Load all books
+        async function loadAllBooks() {
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch(`${API_BASE_URL}/api/books`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    
+                    if (data.status === 'success') {
+                        allBooks = data.data.books || [];
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading books from API:', error);
+            }
+        }
+
+        // Load favorite books from localStorage with API fallback
+        async function loadFavoriteBooks() {
+            const favoriteBooksGrid = document.getElementById('favoriteBooksGrid');
+            
+            try {
+                // Get favorite book IDs from localStorage (from collections page)
+                const favoriteBookIds = JSON.parse(localStorage.getItem('bookFavorites') || '[]');
+                console.log('Favorite book IDs from localStorage:', favoriteBookIds);
+                
+                // Try to get books from API first
+                const token = localStorage.getItem('token');
+                let apiBooks = [];
+                
+                try {
+                    const response = await fetch(`${API_BASE_URL}/api/books`, {
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    });
+                    
+                    if (response.ok) {
+                        const data = await response.json();
+                        
+                        if (data.status === 'success') {
+                            apiBooks = data.data.books || [];
+                            console.log('Books loaded from API:', apiBooks.length);
+                        }
+                    }
+                } catch (apiError) {
+                    console.log('API call failed, using fallback books:', apiError);
+                }
+                
+                // Use API books if available, otherwise use fallback books
+                const availableBooks = apiBooks.length > 0 ? apiBooks : FALLBACK_BOOKS;
+                
+                // Filter books to only include favorites
+                favoriteBooks = availableBooks.filter(book => 
+                    favoriteBookIds.includes(book.id.toString())
+                );
+                
+                console.log('Filtered favorite books:', favoriteBooks);
+                
+                // Display books or show empty state
+                if (favoriteBooks.length === 0) {
+                    favoriteBooksGrid.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-heart"></i>
+                            <h3>No Favorite Books Yet</h3>
+                            <p>Go to Collections and click the heart icon on books to add them to your favorites!</p>
+                            <button class="view-btn" onclick="window.location.href='/collections'" style="margin-top: 1rem;">
+                                <i class="fas fa-book"></i>
+                                Explore Collections
+                            </button>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                // Display favorite books
+                displayFavoriteBooks(favoriteBooks);
+                
+            } catch (error) {
+                console.error('Error loading favorite books:', error);
+                favoriteBooksGrid.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <h3>Error Loading Favorites</h3>
+                        <p>${error.message}</p>
+                        <button class="view-btn" onclick="loadFavoriteBooks()" style="margin-top: 1rem;">
+                            <i class="fas fa-redo"></i>
+                            Try Again
+                        </button>
+                    </div>
+                `;
+            }
+        }
+        
+        // Display favorite books in grid
+        function displayFavoriteBooks(books) {
+            const favoriteBooksGrid = document.getElementById('favoriteBooksGrid');
+            favoriteBooksGrid.innerHTML = '';
+            
+            books.forEach(book => {
+                const bookCard = document.createElement('div');
+                bookCard.className = 'book-card';
+                bookCard.innerHTML = `
+                    <button class="favorite-btn" onclick="removeFavoriteBook(${book.id})">
+                        <i class="fas fa-heart"></i>
+                    </button>
+                    <div class="book-cover" style="background: ${generateColor()}">
+                        ${book.coverUrl ? 
+                            `<img src="${book.coverUrl}" alt="${book.title}" onerror="this.onerror=null; this.parentElement.innerHTML='<i class=\\'fas fa-book\\' style=\\'font-size: 3rem;\\'></i>';">` : 
+                            `<i class="fas fa-book" style="font-size: 3rem;"></i>`
+                        }
+                    </div>
+                    <div class="book-content">
+                        <h3 class="book-title">${book.title}</h3>
+                        <p class="book-author">by ${book.author}</p>
+                        <p style="color: var(--gray); font-size: 0.9rem; margin-bottom: 1rem;">
+                            ${book.description ? book.description.substring(0, 100) + '...' : 'No description available'}
+                        </p>
+                        <div class="book-meta">
+                            <span class="book-genre">${book.genre}</span>
+                            <span style="color: var(--gray); font-size: 0.9rem;">${book.year || ''}</span>
+                        </div>
+                        <button class="view-btn" onclick="generatePodcastFromBook(${book.id})" 
+                                style="width: 100%; margin-top: 1rem; padding: 8px; font-size: 0.9rem;">
+                            <i class="fas fa-headphones"></i>
+                            Create Podcast
+                        </button>
+                    </div>
+                `;
+                
+                favoriteBooksGrid.appendChild(bookCard);
+            });
+        }
+
+        // Load favorite podcasts
+        function loadFavoritePodcasts() {
+            const favoritePodcastsGrid = document.getElementById('favoritePodcastsGrid');
+            const favoritePodcastsData = JSON.parse(localStorage.getItem('favoritePodcasts') || '[]');
+            
+            if (favoritePodcastsData.length === 0) {
+                favoritePodcastsGrid.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-headphones"></i>
+                        <h3>No Favorite Podcasts Yet</h3>
+                        <p>Generate podcasts from your favorite books and mark them as favorites!</p>
+                        <p style="font-size: 0.9rem; margin-top: 0.5rem;">
+                            <i class="fas fa-info-circle"></i>
+                            Podcast favorites feature coming soon!
+                        </p>
+                    </div>
+                `;
+                favoritePodcasts = [];
+                return;
+            }
+            
+            favoritePodcasts = favoritePodcastsData;
+            
+            favoritePodcastsGrid.innerHTML = '';
+            
+            favoritePodcasts.forEach(podcast => {
+                const podcastCard = document.createElement('div');
+                podcastCard.className = 'podcast-card';
+                podcastCard.innerHTML = `
+                    <button class="favorite-btn" onclick="removeFavoritePodcast('${podcast.id}')">
+                        <i class="fas fa-heart"></i>
+                    </button>
+                    <div class="podcast-image" style="background: ${generateColor()}">
+                        <i class="fas fa-headphones"></i>
+                    </div>
+                    <div class="podcast-content">
+                        <h3 class="podcast-title">${podcast.title}</h3>
+                        <p class="podcast-author">by ${podcast.author}</p>
+                        <p style="color: var(--gray); font-size: 0.9rem; margin-bottom: 1rem;">
+                            ${podcast.description || '5-minute educational podcast'}
+                        </p>
+                        <div class="podcast-meta">
+                            <span class="podcast-duration">
+                                <i class="fas fa-clock"></i> ${podcast.duration || '5 min'}
+                            </span>
+                            <div class="podcast-actions">
+                                <button class="action-button" onclick="playPodcast('${podcast.id}')">
+                                    <i class="fas fa-play"></i>
+                                </button>
+                                <button class="action-button delete" onclick="deletePodcast('${podcast.id}')">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                favoritePodcastsGrid.appendChild(podcastCard);
+            });
+        }
+
+        // Setup event listeners
+        function setupEventListeners() {
+            // View toggle buttons
+            const viewBtns = document.querySelectorAll('.view-btn[data-view]');
+            const contentSections = document.querySelectorAll('.content-section');
+            
+            viewBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    // Update active button
+                    viewBtns.forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Show corresponding section
+                    const view = this.dataset.view;
+                    contentSections.forEach(section => {
+                        section.classList.remove('active');
+                    });
+                    
+                    document.getElementById(`${view}Section`).classList.add('active');
+                    
+                    // Load data for the view
+                    if (view === 'recent') {
+                        loadRecentItems();
+                    }
+                });
+            });
+        }
+
+        // Load recent items
+        async function loadRecentItems() {
+            const recentBooksGrid = document.getElementById('recentBooksGrid');
+            
+            try {
+                // Get recent favorites from localStorage
+                const favoriteBookIds = JSON.parse(localStorage.getItem('bookFavorites') || '[]');
+                const availableBooks = FALLBACK_BOOKS; // Use fallback books for now
+                
+                // Filter books for favorites
+                const recentBooks = availableBooks
+                    .filter(book => favoriteBookIds.includes(book.id.toString()))
+                    .slice(-6) // Get last 6
+                    .reverse(); // Newest first
+                
+                if (recentBooks.length === 0) {
+                    recentBooksGrid.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-history"></i>
+                            <h3>No Recent Favorites</h3>
+                            <p>Start adding books to your favorites to see them here!</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                recentBooksGrid.innerHTML = '';
+                
+                recentBooks.forEach(book => {
+                    const bookCard = document.createElement('div');
+                    bookCard.className = 'book-card';
+                    bookCard.innerHTML = `
+                        <button class="favorite-btn" onclick="removeFavoriteBook(${book.id})">
+                            <i class="fas fa-heart"></i>
+                        </button>
+                        <div class="book-cover" style="background: ${generateColor()}">
+                            ${book.coverUrl ? 
+                                `<img src="${book.coverUrl}" alt="${book.title}" onerror="this.style.display='none'">` : 
+                                `<i class="fas fa-book"></i>`
+                            }
+                        </div>
+                        <div class="book-content">
+                            <h3 class="book-title">${book.title}</h3>
+                            <p class="book-author">by ${book.author}</p>
+                            <div class="book-meta">
+                                <span class="book-genre">${book.genre}</span>
+                                <span style="color: var(--gray); font-size: 0.9rem;">${book.year || ''}</span>
+                            </div>
+                        </div>
+                    `;
+                    
+                    recentBooksGrid.appendChild(bookCard);
+                });
+            } catch (error) {
+                console.error('Error loading recent items:', error);
+                recentBooksGrid.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <h3>Error Loading Recent Items</h3>
+                        <p>${error.message}</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Update statistics
+        function updateStats() {
+            // Get favorite book IDs from localStorage
+            const favoriteBookIds = JSON.parse(localStorage.getItem('bookFavorites') || '[]');
+            const favoritePodcastsData = JSON.parse(localStorage.getItem('favoritePodcasts') || '[]');
+            
+            // Update counts
+            document.getElementById('favoriteBooksCount').textContent = favoriteBookIds.length;
+            document.getElementById('favoritePodcastsCount').textContent = favoritePodcastsData.length;
+            document.getElementById('favoritesCount').textContent = `${favoriteBookIds.length + favoritePodcastsData.length} items`;
+            
+            // Calculate total listening time (estimate: 5 minutes per podcast)
+            const totalListeningTime = favoritePodcastsData.length * 5;
+            document.getElementById('totalListeningTime').textContent = `${totalListeningTime} min`;
+            
+            // Calculate completion rate (estimate)
+            const completionRate = Math.min(100, Math.floor((favoritePodcastsData.length / Math.max(1, favoriteBookIds.length)) * 100));
+            document.getElementById('completionRate').textContent = `${completionRate}%`;
+        }
+
+        // Remove favorite book from localStorage
+        async function removeFavoriteBook(bookId) {
+            if (!confirm('Are you sure you want to remove this book from favorites?')) {
+                return;
+            }
+            
+            try {
+                // Get current favorites from localStorage
+                const favorites = JSON.parse(localStorage.getItem('bookFavorites') || '[]');
+                const bookIdStr = bookId.toString();
+                const index = favorites.indexOf(bookIdStr);
+                
+                if (index > -1) {
+                    // Remove from favorites
+                    favorites.splice(index, 1);
+                    localStorage.setItem('bookFavorites', JSON.stringify(favorites));
+                    
+                    // Update display
+                    await loadFavoriteBooks();
+                    updateStats();
+                    
+                    showNotification('Book removed from favorites', 'success');
+                } else {
+                    showNotification('Book not found in favorites', 'error');
+                }
+            } catch (error) {
+                console.error('Error removing favorite book:', error);
+                showNotification('Failed to remove book from favorites', 'error');
+            }
+        }
+
+        // Remove favorite podcast
+        function removeFavoritePodcast(podcastId) {
+            const favoritePodcasts = JSON.parse(localStorage.getItem('favoritePodcasts') || '[]');
+            const index = favoritePodcasts.findIndex(p => p.id === podcastId);
+            
+            if (index > -1) {
+                favoritePodcasts.splice(index, 1);
+                localStorage.setItem('favoritePodcasts', JSON.stringify(favoritePodcasts));
+                
+                // Update display
+                loadFavoritePodcasts();
+                updateStats();
+                
+                showNotification('Podcast removed from favorites', 'info');
+            }
+        }
+
+        // Generate podcast from book
+        async function generatePodcastFromBook(bookId) {
+            // Try to find the book in our favoriteBooks array
+            let book = favoriteBooks.find(b => b.id === bookId);
+            
+            if (!book) {
+                // If not found, try to find it in allBooks
+                book = allBooks.find(b => b.id === bookId);
+                
+                if (!book) {
+                    // If still not found, try the fallback books
+                    book = FALLBACK_BOOKS.find(b => b.id === bookId);
+                }
+            }
+            
+            if (book) {
+                // Store selected book in localStorage
+                localStorage.setItem('selectedBook', JSON.stringify(book));
+                
+                // Redirect to podcast generation page
+                window.location.href = '/podcast-generation';
+            } else {
+                showNotification('Book information not found', 'error');
+            }
+        }
+
+        // Play podcast
+        function playPodcast(podcastId) {
+            const podcast = favoritePodcasts.find(p => p.id === podcastId);
+            
+            if (podcast && podcast.audio_url) {
+                // Store current podcast for player
+                localStorage.setItem('currentPodcast', JSON.stringify(podcast));
+                
+                // Redirect to home to use the audio player
+                window.location.href = '/';
+                
+                // Show notification
+                showNotification(`Playing: ${podcast.title}`, 'success');
+            } else {
+                showNotification('Audio not available for this podcast', 'error');
+            }
+        }
+
+        // Delete podcast
+        async function deletePodcast(podcastId) {
+            if (confirm('Are you sure you want to delete this podcast? This action cannot be undone.')) {
+                try {
+                    const token = localStorage.getItem('token');
+                    const response = await fetch(`${API_BASE_URL}/api/podcast/${podcastId}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    });
+                    
+                    if (response.ok) {
+                        const data = await response.json();
+                        
+                        if (data.status === 'success') {
+                            // Remove from favorites if it exists there
+                            removeFavoritePodcast(podcastId);
+                            
+                            // Update podcasts list
+                            loadFavoritePodcasts();
+                            updateStats();
+                            
+                            showNotification('Podcast deleted successfully', 'success');
+                        } else {
+                            throw new Error(data.message);
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error deleting podcast:', error);
+                    // Even if API fails, remove from local favorites
+                    removeFavoritePodcast(podcastId);
+                    showNotification('Podcast removed from favorites', 'info');
+                }
+            }
+        }
+
+        // Show notification
+        function showNotification(message, type) {
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 100px;
+                right: 20px;
+                padding: 1rem 1.5rem;
+                border-radius: 5px;
+                color: white;
+                font-weight: 500;
+                z-index: 3000;
+                animation: slideIn 0.3s ease;
+                max-width: 300px;
+                box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+            `;
+            
+            if (type === 'success') {
+                notification.style.background = 'var(--success)';
+                notification.innerHTML = `<i class="fas fa-check-circle"></i> ${message}`;
+            } else if (type === 'error') {
+                notification.style.background = 'var(--danger)';
+                notification.innerHTML = `<i class="fas fa-exclamation-circle"></i> ${message}`;
+            } else if (type === 'warning') {
+                notification.style.background = 'var(--warning)';
+                notification.innerHTML = `<i class="fas fa-exclamation-triangle"></i> ${message}`;
+            } else {
+                notification.style.background = 'var(--primary)';
+                notification.innerHTML = `<i class="fas fa-info-circle"></i> ${message}`;
+            }
+            
+            document.body.appendChild(notification);
+            
+            // Remove after 3 seconds
+            setTimeout(() => {
+                notification.style.animation = 'slideOut 0.3s ease';
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        document.body.removeChild(notification);
+                    }
+                }, 300);
+            }, 3000);
+        }
+
+        // Add CSS animations for notifications
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideIn {
+                from { transform: translateX(100%); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+            @keyframes slideOut {
+                from { transform: translateX(0); opacity: 1; }
+                to { transform: translateX(100%); opacity: 0; }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>

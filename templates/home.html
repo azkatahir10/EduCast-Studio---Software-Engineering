@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduCast Studio - AI Powered Educational Podcasts</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --secondary: #3a0ca3;
+            --accent: #4cc9f0;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --success: #4bb543;
+            --warning: #ffc107;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fb;
+            color: var(--dark);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+        
+        /* Navbar */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .navbar-brand {
+            display: flex;
+            align-items: center;
+            color: white;
+            text-decoration: none;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+        
+        .navbar-brand i {
+            margin-right: 10px;
+            font-size: 1.8rem;
+        }
+        
+        .navbar-nav {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+        
+        .nav-item {
+            position: relative;
+        }
+        
+        .nav-link {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .nav-link:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+        }
+        
+        .nav-link.active {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+        
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            color: white;
+        }
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        /* Main Content */
+        .main-content {
+            margin-top: 80px;
+            padding: 2rem;
+            min-height: calc(100vh - 80px);
+        }
+        
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 4rem 2rem;
+            border-radius: 15px;
+            text-align: center;
+            margin-bottom: 3rem;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 100" fill="%23ffffff" opacity="0.1"><polygon points="1000,100 1000,0 0,100"/></svg>');
+            background-size: cover;
+        }
+        
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+        
+        .hero p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+        
+        .cta-button {
+            background: white;
+            color: var(--primary);
+            padding: 12px 30px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+        
+        /* Features Section */
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+        
+        .feature-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .feature-icon {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            color: white;
+            font-size: 1.8rem;
+        }
+        
+        .feature-card h3 {
+            margin-bottom: 1rem;
+            color: var(--secondary);
+        }
+        
+        /* App Description */
+        .app-description {
+            background: white;
+            padding: 3rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            margin: 3rem 0;
+            line-height: 1.8;
+        }
+        
+        .app-description h2 {
+            color: var(--secondary);
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+        
+        .description-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+        
+        .description-item {
+            padding: 1.5rem;
+            background: var(--light);
+            border-radius: 10px;
+            border-left: 4px solid var(--primary);
+        }
+        
+        .description-item h4 {
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        /* How It Works */
+        .how-it-works {
+            margin: 4rem 0;
+            text-align: center;
+        }
+        
+        .steps {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-top: 2rem;
+            flex-wrap: wrap;
+        }
+        
+        .step {
+            flex: 1;
+            min-width: 200px;
+            max-width: 300px;
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            position: relative;
+        }
+        
+        .step-number {
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40px;
+            height: 40px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+        
+        /* Footer */
+        .footer {
+            background: var(--secondary);
+            color: white;
+            padding: 3rem 2rem;
+            margin-top: 4rem;
+            border-radius: 15px;
+            text-align: center;
+        }
+        
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin: 2rem 0;
+            flex-wrap: wrap;
+        }
+        
+        .footer-link {
+            color: white;
+            text-decoration: none;
+            opacity: 0.8;
+            transition: opacity 0.3s;
+        }
+        
+        .footer-link:hover {
+            opacity: 1;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 1rem;
+            }
+            
+            .navbar-nav {
+                gap: 1rem;
+            }
+            
+            .nav-link span {
+                display: none;
+            }
+            
+            .hero h1 {
+                font-size: 2rem;
+            }
+            
+            .hero p {
+                font-size: 1rem;
+            }
+            
+            .main-content {
+                padding: 1rem;
+            }
+            
+            .steps {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .step {
+                width: 100%;
+                max-width: 100%;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .navbar-brand span {
+                display: none;
+            }
+            
+            .features {
+                grid-template-columns: 1fr;
+            }
+            
+            .description-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Fixed Navbar -->
+    <nav class="navbar">
+        <a href="/" class="navbar-brand">
+            <i class="fas fa-podcast"></i>
+            <span>EduCast Studio</span>
+        </a>
+        
+        <ul class="navbar-nav">
+            <li class="nav-item">
+                <a href="/" class="nav-link active">
+                    <i class="fas fa-home"></i>
+                    <span>Home</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="/collections" class="nav-link">
+                    <i class="fas fa-book"></i>
+                    <span>Collections</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="/favourites" class="nav-link">
+                    <i class="fas fa-heart"></i>
+                    <span>Favourites</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="/podcast-generation" class="nav-link">
+                    <i class="fas fa-headphones"></i>
+                    <span>Generate Podcast</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="/chat" class="nav-link">
+                    <i class="fas fa-comments"></i>
+                    <span>Chat</span>
+                </a>
+            </li>
+        </ul>
+        
+        <div class="user-profile">
+            <div class="user-avatar" id="userAvatar" onclick="toggleLogin()">
+                <i class="fas fa-user"></i>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Hero Section -->
+        <div class="hero">
+            <div class="hero-content">
+                <h1>Transform Your Learning Experience</h1>
+                <p>AI-powered 5-minute educational podcasts that make personal development engaging and accessible. Learn from classic literature through quick, interactive audio lessons.</p>
+                <button class="cta-button" onclick="window.location.href='/collections'">
+                    <i class="fas fa-book"></i>
+                    Explore Collections
+                </button>
+            </div>
+        </div>
+
+        <!-- Features Section -->
+        <div class="features">
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-robot"></i>
+                </div>
+                <h3>5-Minute AI Podcasts</h3>
+                <p>Transform classic books into engaging 5-minute podcast-style lessons using advanced AI technology.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-users"></i>
+                </div>
+                <h3>Quick Learning</h3>
+                <p>Perfect for busy schedules. Get key insights from books in just 5 minutes with AI narration.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <h3>Instant Generation</h3>
+                <p>Create educational podcasts instantly from any book with our AI-powered generation system.</p>
+            </div>
+        </div>
+
+        <!-- App Description -->
+        <div class="app-description">
+            <h2>About EduCast Studio</h2>
+            <p>EduCast Studio is an innovative platform that revolutionizes the way we learn from classic literature. Using cutting-edge AI technology, we transform timeless books into concise, engaging 5-minute educational podcasts.</p>
+            
+            <div class="description-grid">
+                <div class="description-item">
+                    <h4><i class="fas fa-bullseye"></i> Our Mission</h4>
+                    <p>To make quality education accessible to everyone by transforming dense literary works into digestible, engaging audio content that fits into modern lifestyles.</p>
+                </div>
+                <div class="description-item">
+                    <h4><i class="fas fa-lightbulb"></i> How It Works</h4>
+                    <p>Select any book from our extensive collection, and our AI will analyze it to create a structured, informative 5-minute podcast highlighting key themes and insights.</p>
+                </div>
+                <div class="description-item">
+                    <h4><i class="fas fa-graduation-cap"></i> Educational Value</h4>
+                    <p>Each podcast is designed to provide genuine educational value, helping listeners understand complex literary concepts in an accessible format.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- How It Works -->
+        <div class="how-it-works">
+            <h2 style="color: var(--secondary); margin-bottom: 1rem;">How EduCast Studio Works</h2>
+            <p style="color: var(--dark); opacity: 0.8; max-width: 600px; margin: 0 auto;">Three simple steps to transform books into educational podcasts</p>
+            
+            <div class="steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <h3>Choose a Book</h3>
+                    <p>Browse our extensive collection of classic literature and select any book that interests you.</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <h3>Generate Podcast</h3>
+                    <p>Click the generate button and watch as our AI creates a 5-minute educational podcast from the book.</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <h3>Listen & Learn</h3>
+                    <p>Enjoy your personalized educational podcast and gain insights from classic literature in just 5 minutes.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Call to Action -->
+        <div style="text-align: center; margin: 4rem 0;">
+            <h2 style="color: var(--secondary); margin-bottom: 1rem;">Ready to Start Learning?</h2>
+            <p style="margin-bottom: 2rem; color: var(--dark); opacity: 0.8;">Join thousands of learners who are transforming their reading experience</p>
+            <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                <button class="cta-button" onclick="window.location.href='/collections'">
+                    <i class="fas fa-book-open"></i>
+                    Explore Book Collections
+                </button>
+                <button class="cta-button" onclick="window.location.href='/authentication'" style="background: var(--secondary); color: white;">
+                    <i class="fas fa-user-plus"></i>
+                    Create Free Account
+                </button>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <h3>EduCast Studio</h3>
+            <p>AI-Powered Educational Podcasts for Modern Learners</p>
+            
+            <div class="footer-links">
+                <a href="/" class="footer-link">Home</a>
+                <a href="/collections" class="footer-link">Collections</a>
+                <a href="/favourites" class="footer-link">Favorites</a>
+                <a href="/podcast-generation" class="footer-link">Generate Podcast</a>
+                <a href="/chat" class="footer-link">Chat with AI</a>
+                <a href="/authentication" class="footer-link">Login/Register</a>
+            </div>
+            
+            <p style="margin-top: 2rem; opacity: 0.7; font-size: 0.9rem;">
+                © 2023 EduCast Studio. All rights reserved.<br>
+                Transforming education through AI technology
+            </p>
+        </div>
+    </main>
+
+    <script>
+        // Check login status
+        function checkLoginStatus() {
+            const token = localStorage.getItem('token');
+            const userAvatar = document.getElementById('userAvatar');
+            
+            if (token) {
+                const user = JSON.parse(localStorage.getItem('currentUser') || '{}');
+                if (user && user.name) {
+                    userAvatar.innerHTML = user.name.charAt(0).toUpperCase();
+                    userAvatar.title = `${user.name} (${user.email || 'User'})`;
+                }
+            }
+        }
+        
+        // Toggle login/logout
+        function toggleLogin() {
+            const token = localStorage.getItem('token');
+            if (token) {
+                if (confirm('Do you want to logout?')) {
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('currentUser');
+                    window.location.href = '/authentication';
+                }
+            } else {
+                window.location.href = '/authentication';
+            }
+        }
+        
+        // Check login status on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            checkLoginStatus();
+            
+            // Highlight active nav link
+            const currentPath = window.location.pathname;
+            const navLinks = document.querySelectorAll('.nav-link');
+            navLinks.forEach(link => {
+                if (link.getAttribute('href') === currentPath) {
+                    link.classList.add('active');
+                } else {
+                    link.classList.remove('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

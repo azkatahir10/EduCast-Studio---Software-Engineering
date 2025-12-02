@@ -1,0 +1,1653 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generate Podcast - EduCast Studio</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --secondary: #3a0ca3;
+            --accent: #4cc9f0;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --success: #4bb543;
+            --danger: #dc3545;
+            --gray: #6c757d;
+            --light-gray: #e9ecef;
+            --warning: #ffc107;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fb;
+            color: var(--dark);
+            line-height: 1.6;
+        }
+        
+        /* Navbar */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .navbar-brand {
+            display: flex;
+            align-items: center;
+            color: white;
+            text-decoration: none;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+        
+        .navbar-brand i {
+            margin-right: 10px;
+            font-size: 1.8rem;
+        }
+        
+        .back-btn {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .back-btn:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            transform: translateX(-5px);
+        }
+        
+        /* Main Content */
+        .main-content {
+            margin-top: 80px;
+            padding: 2rem;
+            max-width: 1000px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        /* Page Header */
+        .page-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .page-header h1 {
+            font-size: 2.5rem;
+            color: var(--secondary);
+            margin-bottom: 0.5rem;
+        }
+        
+        .page-header p {
+            color: var(--gray);
+            font-size: 1.1rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .duration-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            color: white;
+            padding: 8px 20px;
+            border-radius: 25px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-top: 0.5rem;
+            box-shadow: 0 5px 15px rgba(67, 97, 238, 0.2);
+        }
+        
+        /* Book Info */
+        .book-info {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+            border-left: 5px solid var(--primary);
+        }
+        
+        .book-title {
+            font-size: 1.8rem;
+            color: var(--secondary);
+            margin-bottom: 0.5rem;
+        }
+        
+        .book-author {
+            font-size: 1.2rem;
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+        }
+        
+        .book-meta {
+            display: flex;
+            gap: 2rem;
+            flex-wrap: wrap;
+            margin-bottom: 1.5rem;
+        }
+        
+        .meta-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 1rem;
+            background: var(--light);
+            border-radius: 10px;
+            min-width: 100px;
+        }
+        
+        .meta-label {
+            font-size: 0.8rem;
+            color: var(--gray);
+            margin-bottom: 0.5rem;
+        }
+        
+        .meta-value {
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        /* Script Section */
+        .script-section {
+            margin-bottom: 3rem;
+        }
+        
+        .script-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .script-title {
+            font-size: 1.5rem;
+            color: var(--secondary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .copy-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .copy-btn:hover {
+            background: var(--secondary);
+            transform: translateY(-2px);
+        }
+        
+        .script-content {
+            background: #f8f9fa;
+            padding: 2rem;
+            border-radius: 10px;
+            white-space: pre-line;
+            line-height: 1.8;
+            font-size: 1.1rem;
+            border: 2px solid #e9ecef;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .script-line {
+            margin-bottom: 1rem;
+            padding-left: 1rem;
+            border-left: 3px solid var(--primary);
+        }
+        
+        .speaker {
+            font-weight: 600;
+            color: var(--primary);
+            margin-right: 0.5rem;
+        }
+        
+        /* Generation Status */
+        .generation-status {
+            margin: 3rem 0;
+            text-align: center;
+        }
+        
+        .progress-container {
+            background: var(--light);
+            border-radius: 25px;
+            height: 20px;
+            margin: 1.5rem 0;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            border-radius: 25px;
+            transition: width 0.5s ease;
+            width: 0%;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .progress-bar::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            animation: shimmer 2s infinite;
+        }
+        
+        @keyframes shimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+        
+        .progress-text {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--secondary);
+        }
+        
+        .status-message {
+            font-size: 1rem;
+            color: var(--gray);
+            margin-bottom: 1rem;
+            min-height: 24px;
+        }
+        
+        /* Steps */
+        .generation-steps {
+            margin: 2rem 0;
+        }
+        
+        .step {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1.2rem;
+            margin-bottom: 0.8rem;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            background: var(--light);
+        }
+        
+        .step.active {
+            background: linear-gradient(135deg, rgba(67, 97, 238, 0.1), rgba(76, 201, 240, 0.1));
+            border-left: 4px solid var(--primary);
+            transform: translateX(5px);
+        }
+        
+        .step.completed {
+            background: linear-gradient(135deg, rgba(75, 181, 67, 0.1), rgba(76, 201, 240, 0.1));
+            border-left: 4px solid var(--success);
+        }
+        
+        .step-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--light-gray);
+            color: var(--gray);
+            flex-shrink: 0;
+        }
+        
+        .step.active .step-icon {
+            background: var(--primary);
+            color: white;
+            animation: pulse 2s infinite;
+        }
+        
+        .step.completed .step-icon {
+            background: var(--success);
+            color: white;
+        }
+        
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(67, 97, 238, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(67, 97, 238, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(67, 97, 238, 0); }
+        }
+        
+        .step-content {
+            flex: 1;
+        }
+        
+        .step-title {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+            color: var(--dark);
+        }
+        
+        .step-description {
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+        
+        /* Audio Player Section */
+        .audio-section {
+            margin: 3rem 0;
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .audio-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .audio-header h3 {
+            font-size: 1.8rem;
+            color: var(--secondary);
+            margin-bottom: 0.5rem;
+        }
+        
+        .audio-header p {
+            color: var(--gray);
+        }
+        
+        .audio-player {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            padding: 2rem;
+            border-radius: 15px;
+            color: white;
+        }
+        
+        .player-info {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .player-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        
+        .player-author {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .player-controls {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .play-pause-btn {
+            width: 60px;
+            height: 60px;
+            background: white;
+            color: var(--primary);
+            border: none;
+            border-radius: 50%;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .play-pause-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 5px 20px rgba(255, 255, 255, 0.3);
+        }
+        
+        .player-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .player-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.1);
+        }
+        
+        .progress-container-audio {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.2);
+            height: 6px;
+            border-radius: 3px;
+            cursor: pointer;
+            position: relative;
+            margin: 0 1rem;
+        }
+        
+        .progress-audio {
+            height: 100%;
+            background: white;
+            border-radius: 3px;
+            width: 0%;
+            transition: width 0.1s ease;
+        }
+        
+        .time-display {
+            color: white;
+            font-size: 0.9rem;
+            min-width: 100px;
+            text-align: center;
+        }
+        
+        .volume-control {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 1rem;
+            justify-content: center;
+        }
+        
+        .volume-slider {
+            width: 150px;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 3px;
+            outline: none;
+            -webkit-appearance: none;
+        }
+        
+        .volume-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 16px;
+            height: 16px;
+            background: white;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+        
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 2rem;
+            flex-wrap: wrap;
+        }
+        
+        .action-btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 25px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .primary-btn {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            box-shadow: 0 5px 15px rgba(67, 97, 238, 0.3);
+        }
+        
+        .secondary-btn {
+            background: white;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+        
+        .success-btn {
+            background: var(--success);
+            color: white;
+            box-shadow: 0 5px 15px rgba(75, 181, 67, 0.3);
+        }
+        
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+        }
+        
+        .action-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        /* Error Message */
+        .error-message {
+            background: rgba(220, 53, 69, 0.1);
+            color: var(--danger);
+            padding: 1rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+            border: 1px solid var(--danger);
+            display: none;
+            text-align: center;
+        }
+        
+        /* Loading */
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(67, 97, 238, 0.3);
+            border-radius: 50%;
+            border-top-color: var(--primary);
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 10px;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* Success Animation */
+        .success-animation {
+            text-align: center;
+            margin: 2rem 0;
+            animation: bounce 0.5s ease;
+        }
+        
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {transform: translateY(0);}
+            40% {transform: translateY(-30px);}
+            60% {transform: translateY(-15px);}
+        }
+        
+        /* TTS Notice */
+        .tts-notice {
+            background: rgba(67, 97, 238, 0.1);
+            color: var(--primary);
+            padding: 1rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+            border: 1px solid var(--primary);
+            text-align: center;
+            display: none;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 1rem;
+            }
+            
+            .main-content {
+                padding: 1rem;
+            }
+            
+            .book-meta {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .meta-item {
+                width: 100%;
+            }
+            
+            .script-content {
+                padding: 1rem;
+                font-size: 1rem;
+            }
+            
+            .player-controls {
+                flex-wrap: wrap;
+            }
+            
+            .progress-container-audio {
+                order: 3;
+                width: 100%;
+                margin: 1rem 0;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+            
+            .action-btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .navbar-brand span {
+                display: none;
+            }
+            
+            .page-header h1 {
+                font-size: 2rem;
+            }
+            
+            .book-title {
+                font-size: 1.5rem;
+            }
+            
+            .step {
+                flex-direction: column;
+                text-align: center;
+                gap: 0.5rem;
+            }
+            
+            .step-icon {
+                width: 35px;
+                height: 35px;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <a href="/collections" class="back-btn">
+            <i class="fas fa-arrow-left"></i>
+            Back to Collections
+        </a>
+        <a href="/" class="navbar-brand">
+            <i class="fas fa-podcast"></i>
+            <span>EduCast Studio</span>
+        </a>
+        <div style="width: 100px;"></div> <!-- Spacer for balance -->
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Page Header -->
+        <div class="page-header">
+            <h1>Generate 5-Minute Podcast</h1>
+            <p>AI-powered podcast generation from your selected book</p>
+            <div class="duration-badge">
+                <i class="fas fa-clock"></i> 5-Minute Educational Podcast
+            </div>
+        </div>
+        
+        <!-- Book Info -->
+        <div class="book-info" id="bookInfo">
+            <!-- Book info will be loaded here -->
+        </div>
+        
+        <!-- TTS Notice -->
+        <div class="tts-notice" id="ttsNotice">
+            <i class="fas fa-volume-up"></i>
+            <span id="ttsText">Using Browser Text-to-Speech for podcast narration</span>
+        </div>
+        
+        <!-- Error Message -->
+        <div class="error-message" id="errorMessage">
+            <i class="fas fa-exclamation-triangle"></i>
+            <span id="errorText">Error occurred during generation</span>
+        </div>
+        
+        <!-- Script Section -->
+        <div class="script-section" id="scriptSection" style="display: none;">
+            <div class="script-header">
+                <h3 class="script-title">
+                    <i class="fas fa-scroll"></i>
+                    Generated Podcast Script
+                </h3>
+                <button class="copy-btn" id="copyScriptBtn">
+                    <i class="fas fa-copy"></i>
+                    Copy Script
+                </button>
+            </div>
+            <div class="script-content" id="scriptContent">
+                <!-- Script will be loaded here -->
+            </div>
+        </div>
+        
+        <!-- Generation Status -->
+        <div class="generation-status" id="generationStatus">
+            <div class="progress-text" id="progressText">Ready to generate podcast</div>
+            <div class="progress-container">
+                <div class="progress-bar" id="progressBar"></div>
+            </div>
+            <div class="status-message" id="statusMessage">Click the button below to start</div>
+            
+            <!-- Steps -->
+            <div class="generation-steps">
+                <div class="step" id="step1">
+                    <div class="step-icon">
+                        <i class="fas fa-book"></i>
+                    </div>
+                    <div class="step-content">
+                        <div class="step-title">Book Analysis</div>
+                        <div class="step-description">Analyzing book content and structure</div>
+                    </div>
+                </div>
+                
+                <div class="step" id="step2">
+                    <div class="step-icon">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <div class="step-content">
+                        <div class="step-title">AI Script Writing</div>
+                        <div class="step-description">Generating educational podcast script</div>
+                    </div>
+                </div>
+                
+                <div class="step" id="step3">
+                    <div class="step-icon">
+                        <i class="fas fa-microphone"></i>
+                    </div>
+                    <div class="step-content">
+                        <div class="step-title">Voice Synthesis</div>
+                        <div class="step-description">Creating AI narration with Text-to-Speech</div>
+                    </div>
+                </div>
+                
+                <div class="step" id="step4">
+                    <div class="step-icon">
+                        <i class="fas fa-music"></i>
+                    </div>
+                    <div class="step-content">
+                        <div class="step-title">Audio Processing</div>
+                        <div class="step-description">Optimizing for 5-minute duration</div>
+                    </div>
+                </div>
+                
+                <div class="step" id="step5">
+                    <div class="step-icon">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    <div class="step-content">
+                        <div class="step-title">Finalizing</div>
+                        <div class="step-description">Preparing your educational podcast</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Audio Player Section -->
+        <div class="audio-section" id="audioSection">
+            <div class="audio-header">
+                <h3>🎧 Your Podcast is Ready!</h3>
+                <p>Listen to your AI-generated 5-minute educational podcast</p>
+            </div>
+            
+            <div class="audio-player">
+                <div class="player-info">
+                    <div class="player-title" id="playerTitle">Podcast Title</div>
+                    <div class="player-author" id="playerAuthor">Author</div>
+                    <div id="ttsStatus" style="font-size: 0.9rem; opacity: 0.8; margin-top: 0.5rem;">
+                        <i class="fas fa-volume-up"></i> Browser Text-to-Speech Active
+                    </div>
+                </div>
+                
+                <div class="player-controls">
+                    <button class="player-btn" id="rewindBtn">
+                        <i class="fas fa-backward"></i>
+                    </button>
+                    
+                    <button class="play-pause-btn" id="playPauseBtn">
+                        <i class="fas fa-play"></i>
+                    </button>
+                    
+                    <button class="player-btn" id="forwardBtn">
+                        <i class="fas fa-forward"></i>
+                    </button>
+                    
+                    <div class="progress-container-audio" id="audioProgressBar">
+                        <div class="progress-audio" id="audioProgress"></div>
+                    </div>
+                    
+                    <span class="time-display" id="currentTime">0:00</span>
+                </div>
+                
+                <div class="volume-control">
+                    <i class="fas fa-volume-down"></i>
+                    <input type="range" class="volume-slider" id="volumeSlider" min="0" max="100" value="50">
+                    <i class="fas fa-volume-up"></i>
+                </div>
+                
+                <div style="text-align: center; margin-top: 1rem; font-size: 0.9rem; opacity: 0.8;">
+                    <i class="fas fa-info-circle"></i> The podcast is narrated using your browser's Text-to-Speech
+                </div>
+            </div>
+            
+            <div class="success-animation">
+                <i class="fas fa-check-circle" style="font-size: 3rem; color: var(--success);"></i>
+                <h3 style="margin-top: 1rem; color: var(--success);">Podcast Generated Successfully!</h3>
+                <p style="color: var(--gray);">Your 5-minute educational podcast is now available in your library.</p>
+            </div>
+        </div>
+        
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+            <button class="action-btn secondary-btn" onclick="window.location.href='/collections'">
+                <i class="fas fa-book"></i>
+                Back to Collections
+            </button>
+            
+            <button class="action-btn primary-btn" id="generateBtn" onclick="startPodcastGeneration()">
+                <i class="fas fa-magic"></i>
+                Generate 5-Min Podcast
+            </button>
+            
+            <button class="action-btn success-btn" id="viewPodcastsBtn" onclick="window.location.href='/'" style="display: none;">
+                <i class="fas fa-headphones"></i>
+                View My Podcasts
+            </button>
+            
+            <button class="action-btn primary-btn" id="playInHomeBtn" onclick="window.location.href='/'" style="display: none;">
+                <i class="fas fa-home"></i>
+                Play in Home
+            </button>
+        </div>
+    </main>
+
+    <script>
+        // Configuration
+        let currentBook = null;
+        let generatedPodcast = null;
+        let audioPlayer = null;
+        let progressInterval = null;
+        let isGenerating = false;
+        let isPlaying = false;
+        let currentUtterance = null;
+        let speechSynthesis = window.speechSynthesis;
+        let podcastScript = '';
+        let startTime = null;
+        let elapsedTime = 0;
+        let totalDuration = 300; // 5 minutes in seconds
+        let updateInterval = null;
+
+        // Book-specific podcast scripts
+        const BOOK_SCRIPTS = {
+            "Pride and Prejudice": `Welcome to EduCast Studio's Five-Minute Literary Journey. Today, we're exploring Jane Austen's timeless masterpiece, "Pride and Prejudice."
+
+Published in 1813, this novel isn't just a romance—it's a brilliant social satire that critiques the marriage market of Regency England. Through the sharp-eyed Elizabeth Bennet, Austen examines how first impressions can be dangerously misleading.
+
+The central relationship between Elizabeth and Mr. Darcy shows how pride and prejudice can blind us to true character. Darcy's initial aloofness masks genuine integrity, while the charming Mr. Wickham's pleasant manners hide dishonesty.
+
+Austen's genius lies in her witty dialogue and keen observation of human nature. She explores themes of reputation, class, and the economic pressures facing women in a society where marriage was often a financial necessity rather than a romantic choice.
+
+Beyond the love story, "Pride and Prejudice" offers profound insights about self-knowledge and personal growth. Elizabeth's journey teaches us the importance of questioning our assumptions and recognizing our own biases.
+
+The novel remains incredibly relevant today because it speaks to universal experiences: navigating social expectations, seeking genuine connection, and learning to see beyond surface appearances.
+
+Austen's enduring popularity proves that great literature doesn't just entertain—it helps us understand ourselves and our relationships more deeply.
+
+Thank you for joining us. Until next time, keep reading and exploring the world through books.`,
+
+            "The Great Gatsby": `Welcome to EduCast Studio. Today, we're diving into F. Scott Fitzgerald's iconic novel, "The Great Gatsby."
+
+Set in the Roaring Twenties, this book captures the glamour and moral decay of the Jazz Age. Through narrator Nick Carraway's eyes, we enter the world of mysterious millionaire Jay Gatsby.
+
+Gatsby embodies the American Dream—the belief that anyone can reinvent themselves through hard work and determination. But Fitzgerald asks: What happens when that dream becomes corrupted by materialism and obsession?
+
+Gatsby's lavish parties and mysterious wealth are all aimed at winning back his lost love, Daisy Buchanan. But Daisy represents the old money aristocracy that Gatsby can never truly join, no matter how wealthy he becomes.
+
+The novel's famous symbols—the green light at the end of Daisy's dock, the eyes of Doctor T.J. Eckleburg—speak to themes of hope, judgment, and the elusive nature of the American Dream.
+
+Fitzgerald's lyrical prose captures both the excitement and the emptiness of the era. He shows us that beneath the glittering surface lies moral bankruptcy and shattered dreams.
+
+"The Great Gatsby" remains essential reading because it questions whether success is measured by material wealth or by something deeper and more meaningful.
+
+The novel warns that chasing an idealized past can prevent us from living fully in the present—a lesson as relevant today as it was in the 1920s.
+
+Thank you for listening. Remember, sometimes the most important journeys are the ones that help us understand what truly matters.`,
+
+            "Frankenstein": `Welcome to EduCast Studio. Today we're exploring Mary Shelley's groundbreaking novel, "Frankenstein."
+
+Written when Shelley was just 18, this 1818 masterpiece is considered the first true science fiction novel. But it's much more than a horror story—it's a profound meditation on creation, responsibility, and what it means to be human.
+
+Young scientist Victor Frankenstein becomes obsessed with creating life, but when he succeeds, he's horrified by his creature and abandons it. This act of rejection sets in motion the novel's tragic events.
+
+The creature, despite his monstrous appearance, is intelligent, sensitive, and capable of deep emotion. He learns to read, understands philosophy, and longs for companionship. His eloquent pleas for understanding challenge our assumptions about monsters and humanity.
+
+Shelley raises crucial questions: What responsibilities do creators have toward their creations? Can we play God without considering the consequences? And what happens when knowledge outpaces wisdom?
+
+The novel's structure creates multiple perspectives, forcing readers to consider who the real monster might be: the creature or his creator.
+
+"Frankenstein" warns against unchecked ambition and the dangers of pursuing knowledge without ethical boundaries. It speaks to modern concerns about artificial intelligence, genetic engineering, and scientific responsibility.
+
+Shelley's work reminds us that true horror often comes not from monsters, but from human failings: abandonment, prejudice, and the refusal to take responsibility for our actions.
+
+This pioneering novel continues to shape how we think about science, ethics, and our relationship with technology.
+
+Thank you for joining us. Remember that with great power comes great responsibility—a lesson Victor Frankenstein learned too late.`
+        };
+
+        // Default script for other books
+        const DEFAULT_SCRIPT = `Welcome to EduCast Studio's Five-Minute Literary Journey. Today, we're exploring "[BOOK_TITLE]."
+
+This work stands as an important contribution to literature, offering insights into the human condition and the society from which it emerged.
+
+The novel explores themes that resonate across time and culture: the search for meaning, the complexities of human relationships, and our place in the world.
+
+Through its characters and narrative, "[BOOK_TITLE]" invites us to consider fundamental questions about identity, morality, and what it means to live a meaningful life.
+
+Good literature doesn't just tell a story—it helps us understand ourselves and others more deeply. It challenges our assumptions and expands our perspectives.
+
+"[BOOK_TITLE]" remains relevant because it speaks to universal human experiences: love and loss, hope and disappointment, the struggle for self-understanding.
+
+The best books are those that stay with us long after we've finished reading them, continuing to shape how we see the world.
+
+Thank you for joining us for this brief exploration. May it inspire you to read, reflect, and discover the transformative power of literature.`;
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if user is logged in
+            const token = localStorage.getItem('token');
+            if (!token) {
+                window.location.href = '/authentication';
+                return;
+            }
+            
+            // Get selected book from localStorage
+            const selectedBook = localStorage.getItem('selectedBook');
+            if (!selectedBook) {
+                window.location.href = '/collections';
+                return;
+            }
+            
+            try {
+                currentBook = JSON.parse(selectedBook);
+                if (!currentBook || !currentBook.title) {
+                    throw new Error('Invalid book data');
+                }
+                
+                // Display book info
+                displayBookInfo(currentBook);
+                
+                // Initialize TTS
+                initializeTextToSpeech();
+                
+                // Setup copy script button
+                document.getElementById('copyScriptBtn').addEventListener('click', copyScriptToClipboard);
+                
+                // Show TTS notice
+                showTTSNotice();
+                
+            } catch (error) {
+                console.error('Error loading book:', error);
+                showError('Failed to load book information. Please select a book again.');
+                setTimeout(() => {
+                    window.location.href = '/collections';
+                }, 3000);
+            }
+        });
+
+        // Show TTS notice
+        function showTTSNotice() {
+            document.getElementById('ttsNotice').style.display = 'block';
+        }
+
+        // Initialize Text-to-Speech
+        function initializeTextToSpeech() {
+            // Check if browser supports speech synthesis
+            if (!speechSynthesis) {
+                showError('Your browser does not support Text-to-Speech. Please try Chrome, Edge, or Safari.');
+                return;
+            }
+            
+            // Get available voices
+            let voices = speechSynthesis.getVoices();
+            if (voices.length === 0) {
+                speechSynthesis.addEventListener('voiceschanged', function() {
+                    voices = speechSynthesis.getVoices();
+                });
+            }
+            
+            // Initialize audio player UI (for progress simulation)
+            initializeAudioUI();
+        }
+
+        // Initialize audio UI controls
+        function initializeAudioUI() {
+            // Player control event listeners
+            document.getElementById('playPauseBtn').addEventListener('click', togglePlayPause);
+            document.getElementById('rewindBtn').addEventListener('click', rewindAudio);
+            document.getElementById('forwardBtn').addEventListener('click', forwardAudio);
+            document.getElementById('volumeSlider').addEventListener('input', setVolume);
+            document.getElementById('audioProgressBar').addEventListener('click', setAudioProgress);
+            
+            // Initially disable controls (will be enabled when podcast is ready)
+            document.getElementById('playPauseBtn').disabled = true;
+            document.getElementById('rewindBtn').disabled = true;
+            document.getElementById('forwardBtn').disabled = true;
+        }
+
+        // Display book information
+        function displayBookInfo(book) {
+            const bookInfo = document.getElementById('bookInfo');
+            
+            bookInfo.innerHTML = `
+                <h2 class="book-title">${escapeHtml(book.title)}</h2>
+                <p class="book-author">by ${escapeHtml(book.author || 'Unknown Author')}</p>
+                
+                <div class="book-meta">
+                    ${book.year ? `
+                    <div class="meta-item">
+                        <span class="meta-label">Published</span>
+                        <span class="meta-value">${book.year}</span>
+                    </div>
+                    ` : ''}
+                    
+                    ${book.genre ? `
+                    <div class="meta-item">
+                        <span class="meta-label">Genre</span>
+                        <span class="meta-value">${escapeHtml(book.genre)}</span>
+                    </div>
+                    ` : ''}
+                    
+                    ${book.source ? `
+                    <div class="meta-item">
+                        <span class="meta-label">Source</span>
+                        <span class="meta-value">${escapeHtml(book.source)}</span>
+                    </div>
+                    ` : ''}
+                    
+                    ${book.pages ? `
+                    <div class="meta-item">
+                        <span class="meta-label">Pages</span>
+                        <span class="meta-value">${book.pages}</span>
+                    </div>
+                    ` : ''}
+                </div>
+                
+                <p style="color: var(--gray); line-height: 1.6;">
+                    <strong>Description:</strong> ${escapeHtml(book.description || 'No description available.')}
+                </p>
+            `;
+        }
+
+        // Start podcast generation
+        async function startPodcastGeneration() {
+            if (isGenerating) return;
+            
+            isGenerating = true;
+            const generateBtn = document.getElementById('generateBtn');
+            const originalText = generateBtn.innerHTML;
+            
+            // Update UI for generation
+            generateBtn.innerHTML = '<div class="loading-spinner"></div> Generating...';
+            generateBtn.disabled = true;
+            
+            // Hide error message
+            hideError();
+            
+            // Show script section
+            document.getElementById('scriptSection').style.display = 'block';
+            
+            // Start progress simulation
+            simulateProgress();
+            
+            try {
+                // Generate high-quality educational podcast with TTS
+                await generatePodcastWithTTS();
+                
+            } catch (error) {
+                console.error('Generation error:', error);
+                showError('Failed to generate podcast: ' + error.message);
+                
+                // Reset UI
+                generateBtn.innerHTML = originalText;
+                generateBtn.disabled = false;
+                isGenerating = false;
+                
+                // Stop progress simulation
+                if (progressInterval) {
+                    clearInterval(progressInterval);
+                }
+            }
+        }
+
+        // Generate podcast with Text-to-Speech
+        async function generatePodcastWithTTS() {
+            // Simulate realistic processing time
+            await new Promise(resolve => setTimeout(resolve, 3000));
+            
+            // Get or generate high-quality script
+            podcastScript = getBookScript(currentBook.title, currentBook.author);
+            
+            // Create podcast data
+            const podcast = {
+                id: `podcast-${Date.now()}`,
+                title: `5-Minute Summary: ${currentBook.title}`,
+                author: currentBook.author || 'Unknown Author',
+                description: `An educational podcast exploring "${currentBook.title}"`,
+                duration: '5:00',
+                script: podcastScript,
+                status: 'completed',
+                created_at: new Date().toISOString(),
+                book_id: currentBook.id,
+                usesTTS: true
+            };
+            
+            generatedPodcast = podcast;
+            
+            // Display the high-quality script
+            displayScript(podcastScript);
+            
+            // Complete generation
+            completeGeneration();
+            
+            // Show audio player with TTS controls
+            showAudioPlayer(podcast);
+            
+            // Update podcasts in localStorage
+            updateLocalPodcasts(podcast);
+        }
+
+        // Get script for book
+        function getBookScript(bookTitle, author) {
+            // Check if we have a pre-written script for this book
+            if (BOOK_SCRIPTS[bookTitle]) {
+                return BOOK_SCRIPTS[bookTitle];
+            }
+            
+            // Generate a high-quality script for other books
+            return DEFAULT_SCRIPT.replace('[BOOK_TITLE]', bookTitle);
+        }
+
+        // Simulate progress
+        function simulateProgress() {
+            let progress = 0;
+            const steps = [
+                { progress: 20, message: "Analyzing literary significance...", step: 1 },
+                { progress: 40, message: "Creating educational content...", step: 2 },
+                { progress: 60, message: "Setting up Text-to-Speech...", step: 3 },
+                { progress: 80, message: "Preparing narration...", step: 4 },
+                { progress: 100, message: "Finalizing 5-minute podcast...", step: 5 }
+            ];
+            
+            let currentStep = 0;
+            
+            progressInterval = setInterval(() => {
+                if (currentStep < steps.length) {
+                    const step = steps[currentStep];
+                    progress = step.progress;
+                    
+                    updateProgress(progress, step.message);
+                    updateStep(step.step, 'active');
+                    
+                    if (currentStep > 0) {
+                        updateStep(steps[currentStep - 1].step, 'completed');
+                    }
+                    
+                    currentStep++;
+                }
+            }, 1500);
+        }
+
+        // Update progress
+        function updateProgress(progress, message) {
+            const progressBar = document.getElementById('progressBar');
+            const progressText = document.getElementById('progressText');
+            const statusMessage = document.getElementById('statusMessage');
+            
+            progressBar.style.width = `${progress}%`;
+            progressText.textContent = `${progress}% Complete`;
+            statusMessage.textContent = message;
+        }
+
+        // Update step
+        function updateStep(stepNumber, status) {
+            const step = document.getElementById(`step${stepNumber}`);
+            if (step) {
+                step.className = `step ${status}`;
+            }
+        }
+
+        // Display script
+        function displayScript(script) {
+            const scriptContent = document.getElementById('scriptContent');
+            
+            // Format the script nicely
+            const formattedScript = script
+                .split('\n')
+                .filter(line => line.trim())
+                .map(line => {
+                    if (line.startsWith('Welcome to EduCast Studio')) {
+                        return `<div class="script-line" style="border-left-color: var(--secondary);"><span class="speaker" style="color: var(--secondary);">INTRODUCTION:</span> ${escapeHtml(line)}</div>`;
+                    }
+                    return `<div class="script-line">${escapeHtml(line)}</div>`;
+                })
+                .join('');
+            
+            scriptContent.innerHTML = formattedScript;
+        }
+
+        // Copy script to clipboard
+        function copyScriptToClipboard() {
+            const scriptContent = document.getElementById('scriptContent');
+            const text = scriptContent.textContent;
+            
+            navigator.clipboard.writeText(text).then(() => {
+                const copyBtn = document.getElementById('copyScriptBtn');
+                const originalText = copyBtn.innerHTML;
+                
+                copyBtn.innerHTML = '<i class="fas fa-check"></i> Copied!';
+                copyBtn.style.background = 'var(--success)';
+                
+                setTimeout(() => {
+                    copyBtn.innerHTML = originalText;
+                    copyBtn.style.background = '';
+                }, 2000);
+            }).catch(err => {
+                console.error('Failed to copy script:', err);
+                showError('Failed to copy script to clipboard');
+            });
+        }
+
+        // Complete generation
+        function completeGeneration() {
+            if (progressInterval) {
+                clearInterval(progressInterval);
+            }
+            
+            // Mark all steps as completed
+            for (let i = 1; i <= 5; i++) {
+                updateStep(i, 'completed');
+            }
+            
+            // Update progress to 100%
+            updateProgress(100, 'Podcast generation completed successfully!');
+            
+            // Reset generate button
+            const generateBtn = document.getElementById('generateBtn');
+            generateBtn.style.display = 'none';
+            
+            // Show other action buttons
+            document.getElementById('viewPodcastsBtn').style.display = 'flex';
+            document.getElementById('playInHomeBtn').style.display = 'flex';
+            
+            isGenerating = false;
+            
+            // Show success notification
+            showNotification('Podcast generated successfully! Ready to play.', 'success');
+        }
+
+        // Show audio player with TTS controls
+        function showAudioPlayer(podcast) {
+            document.getElementById('audioSection').style.display = 'block';
+            
+            // Update player info
+            document.getElementById('playerTitle').textContent = podcast.title;
+            document.getElementById('playerAuthor').textContent = `By ${podcast.author}`;
+            
+            // Enable audio controls
+            document.getElementById('playPauseBtn').disabled = false;
+            document.getElementById('rewindBtn').disabled = false;
+            document.getElementById('forwardBtn').disabled = false;
+            
+            // Reset progress
+            elapsedTime = 0;
+            updateProgressDisplay();
+        }
+
+        // Toggle play/pause for TTS
+        function togglePlayPause() {
+            if (!podcastScript) {
+                showError('No podcast script available');
+                return;
+            }
+            
+            if (isPlaying) {
+                pauseTTS();
+            } else {
+                playTTS();
+            }
+        }
+
+        // Play podcast using TTS
+        function playTTS() {
+            if (!speechSynthesis) {
+                showError('Text-to-Speech not supported in your browser');
+                return;
+            }
+            
+            // Cancel any current speech
+            speechSynthesis.cancel();
+            
+            // Create new utterance
+            currentUtterance = new SpeechSynthesisUtterance(podcastScript);
+            
+            // Configure voice (try to get a good voice)
+            const voices = speechSynthesis.getVoices();
+            const preferredVoices = voices.filter(v => 
+                v.lang.startsWith('en-') && 
+                (v.name.includes('Google') || v.name.includes('Samantha') || v.name.includes('Alex'))
+            );
+            
+            if (preferredVoices.length > 0) {
+                currentUtterance.voice = preferredVoices[0];
+            } else if (voices.length > 0) {
+                currentUtterance.voice = voices[0];
+            }
+            
+            // Set rate and pitch for podcast-like narration
+            currentUtterance.rate = 1.0;
+            currentUtterance.pitch = 1.0;
+            currentUtterance.volume = document.getElementById('volumeSlider').value / 100;
+            
+            // Set up event listeners
+            currentUtterance.onstart = function() {
+                isPlaying = true;
+                document.getElementById('playPauseBtn').innerHTML = '<i class="fas fa-pause"></i>';
+                startTime = Date.now();
+                startProgressUpdate();
+                showNotification('Playing podcast with Text-to-Speech', 'info');
+            };
+            
+            currentUtterance.onend = function() {
+                isPlaying = false;
+                document.getElementById('playPauseBtn').innerHTML = '<i class="fas fa-play"></i>';
+                stopProgressUpdate();
+                elapsedTime = totalDuration;
+                updateProgressDisplay();
+            };
+            
+            currentUtterance.onerror = function(event) {
+                console.error('TTS Error:', event);
+                isPlaying = false;
+                document.getElementById('playPauseBtn').innerHTML = '<i class="fas fa-play"></i>';
+                stopProgressUpdate();
+                showError('Text-to-Speech error: ' + event.error);
+            };
+            
+            // Start speaking
+            speechSynthesis.speak(currentUtterance);
+        }
+
+        // Pause TTS
+        function pauseTTS() {
+            if (speechSynthesis.speaking) {
+                speechSynthesis.pause();
+                isPlaying = false;
+                document.getElementById('playPauseBtn').innerHTML = '<i class="fas fa-play"></i>';
+                stopProgressUpdate();
+                
+                // Update elapsed time
+                if (startTime) {
+                    elapsedTime += (Date.now() - startTime) / 1000;
+                    startTime = null;
+                }
+            }
+        }
+
+        // Start progress update interval
+        function startProgressUpdate() {
+            stopProgressUpdate(); // Clear any existing interval
+            updateInterval = setInterval(updateProgressDisplay, 100);
+        }
+
+        // Stop progress update interval
+        function stopProgressUpdate() {
+            if (updateInterval) {
+                clearInterval(updateInterval);
+                updateInterval = null;
+            }
+        }
+
+        // Update progress display
+        function updateProgressDisplay() {
+            if (isPlaying && startTime) {
+                const currentElapsed = elapsedTime + (Date.now() - startTime) / 1000;
+                const progressPercent = (currentElapsed / totalDuration) * 100;
+                
+                document.getElementById('audioProgress').style.width = `${Math.min(100, progressPercent)}%`;
+                document.getElementById('currentTime').textContent = formatTime(Math.min(totalDuration, currentElapsed));
+            } else {
+                const progressPercent = (elapsedTime / totalDuration) * 100;
+                document.getElementById('audioProgress').style.width = `${Math.min(100, progressPercent)}%`;
+                document.getElementById('currentTime').textContent = formatTime(Math.min(totalDuration, elapsedTime));
+            }
+        }
+
+        // Rewind audio
+        function rewindAudio() {
+            if (isPlaying) {
+                // Pause, adjust time, then resume
+                const wasPlaying = isPlaying;
+                pauseTTS();
+                
+                // Rewind 10 seconds
+                elapsedTime = Math.max(0, elapsedTime - 10);
+                updateProgressDisplay();
+                
+                if (wasPlaying) {
+                    // Resume from new position
+                    setTimeout(playTTS, 100);
+                }
+            } else {
+                // Just adjust time
+                elapsedTime = Math.max(0, elapsedTime - 10);
+                updateProgressDisplay();
+            }
+        }
+
+        // Forward audio
+        function forwardAudio() {
+            if (isPlaying) {
+                // Pause, adjust time, then resume
+                const wasPlaying = isPlaying;
+                pauseTTS();
+                
+                // Forward 10 seconds
+                elapsedTime = Math.min(totalDuration, elapsedTime + 10);
+                updateProgressDisplay();
+                
+                if (wasPlaying) {
+                    // Resume from new position
+                    setTimeout(playTTS, 100);
+                }
+            } else {
+                // Just adjust time
+                elapsedTime = Math.min(totalDuration, elapsedTime + 10);
+                updateProgressDisplay();
+            }
+        }
+
+        // Set volume
+        function setVolume() {
+            const volume = document.getElementById('volumeSlider').value / 100;
+            if (currentUtterance) {
+                currentUtterance.volume = volume;
+            }
+        }
+
+        // Set audio progress by clicking on progress bar
+        function setAudioProgress(e) {
+            const progressBar = document.getElementById('audioProgressBar');
+            const clickPosition = (e.pageX - progressBar.getBoundingClientRect().left) / progressBar.offsetWidth;
+            const newTime = clickPosition * totalDuration;
+            
+            if (isPlaying) {
+                const wasPlaying = isPlaying;
+                pauseTTS();
+                elapsedTime = newTime;
+                updateProgressDisplay();
+                if (wasPlaying) {
+                    setTimeout(playTTS, 100);
+                }
+            } else {
+                elapsedTime = newTime;
+                updateProgressDisplay();
+            }
+        }
+
+        // Format time as MM:SS
+        function formatTime(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = Math.floor(seconds % 60);
+            return `${mins}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        // Update local podcasts
+        function updateLocalPodcasts(podcast) {
+            const userPodcasts = JSON.parse(localStorage.getItem('userPodcasts') || '[]');
+            
+            // Add new podcast
+            userPodcasts.push({
+                id: podcast.id,
+                title: podcast.title,
+                author: podcast.author,
+                description: podcast.description,
+                duration: podcast.duration,
+                script: podcast.script,
+                status: podcast.status,
+                created_at: podcast.created_at,
+                coverColor: generateColor(),
+                book_id: podcast.book_id,
+                usesTTS: true
+            });
+            
+            localStorage.setItem('userPodcasts', JSON.stringify(userPodcasts));
+            
+            // Also store as current podcast
+            localStorage.setItem('currentPodcast', JSON.stringify({
+                id: podcast.id,
+                title: podcast.title,
+                author: podcast.author,
+                script: podcast.script,
+                duration: podcast.duration,
+                usesTTS: true
+            }));
+            
+            // Show success message
+            console.log('Podcast saved with TTS capability');
+        }
+
+        // Generate random color
+        function generateColor() {
+            const colors = ['#4361ee', '#3a0ca3', '#4cc9f0', '#f72585', '#7209b7'];
+            return colors[Math.floor(Math.random() * colors.length)];
+        }
+
+        // Error handling
+        function showError(message) {
+            const errorMessage = document.getElementById('errorMessage');
+            const errorText = document.getElementById('errorText');
+            
+            errorText.textContent = message;
+            errorMessage.style.display = 'block';
+            
+            // Auto-hide after 10 seconds
+            setTimeout(() => {
+                errorMessage.style.display = 'none';
+            }, 10000);
+        }
+
+        function hideError() {
+            document.getElementById('errorMessage').style.display = 'none';
+        }
+
+        // Show notification
+        function showNotification(message, type) {
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 100px;
+                right: 20px;
+                padding: 1rem 1.5rem;
+                border-radius: 5px;
+                color: white;
+                font-weight: 500;
+                z-index: 3000;
+                animation: slideIn 0.3s ease;
+                max-width: 300px;
+                box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+            `;
+            
+            if (type === 'success') {
+                notification.style.background = 'var(--success)';
+                notification.innerHTML = `<i class="fas fa-check-circle"></i> ${message}`;
+            } else if (type === 'error') {
+                notification.style.background = 'var(--danger)';
+                notification.innerHTML = `<i class="fas fa-exclamation-circle"></i> ${message}`;
+            } else if (type === 'info') {
+                notification.style.background = 'var(--primary)';
+                notification.innerHTML = `<i class="fas fa-info-circle"></i> ${message}`;
+            } else {
+                notification.style.background = 'var(--primary)';
+                notification.innerHTML = `<i class="fas fa-info-circle"></i> ${message}`;
+            }
+            
+            document.body.appendChild(notification);
+            
+            // Remove after 3 seconds
+            setTimeout(() => {
+                notification.style.animation = 'slideOut 0.3s ease';
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        document.body.removeChild(notification);
+                    }
+                }, 300);
+            }, 3000);
+        }
+
+        // Escape HTML to prevent XSS
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Add CSS animations for notifications
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideIn {
+                from { transform: translateX(100%); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+            @keyframes slideOut {
+                from { transform: translateX(0); opacity: 1; }
+                to { transform: translateX(100%); opacity: 0; }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>
