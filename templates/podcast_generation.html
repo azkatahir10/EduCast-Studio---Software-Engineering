@@ -610,6 +610,74 @@
             display: none;
         }
         
+        /* API Configuration Section */
+        .api-config {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin-bottom: 1.5rem;
+            border: 2px dashed var(--primary);
+        }
+        
+        .config-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .config-title {
+            font-size: 1.2rem;
+            color: var(--secondary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .config-note {
+            font-size: 0.9rem;
+            color: var(--gray);
+            margin-top: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        /* API Key Input */
+        .api-key-input {
+            margin: 1rem 0;
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .api-key-input input {
+            flex: 1;
+            padding: 0.75rem;
+            border: 2px solid var(--light-gray);
+            border-radius: 5px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+        
+        .api-key-input input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+        
+        .api-key-input button {
+            padding: 0.75rem 1.5rem;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .api-key-input button:hover {
+            background: var(--secondary);
+        }
+        
         /* Responsive */
         @media (max-width: 768px) {
             .navbar {
@@ -651,6 +719,10 @@
             .action-btn {
                 width: 100%;
                 justify-content: center;
+            }
+            
+            .api-key-input {
+                flex-direction: column;
             }
         }
         
@@ -700,9 +772,35 @@
         <!-- Page Header -->
         <div class="page-header">
             <h1>Generate 5-Minute Podcast</h1>
-            <p>AI-powered podcast generation from your selected book</p>
+            <p>AI-powered podcast generation using Gemini API Free Tier</p>
             <div class="duration-badge">
                 <i class="fas fa-clock"></i> 5-Minute Educational Podcast
+            </div>
+        </div>
+        
+        <!-- API Configuration -->
+        <div class="api-config" id="apiConfig">
+            <div class="config-header">
+                <h3 class="config-title">
+                    <i class="fas fa-key"></i>
+                    Gemini API Configuration (Free Tier)
+                </h3>
+            </div>
+            <div class="api-key-input">
+                <input type="password" 
+                       id="apiKeyInput" 
+                       placeholder="Enter your free Gemini API key"
+                       value="">
+                <button onclick="saveApiKey()">
+                    <i class="fas fa-save"></i> Save
+                </button>
+            </div>
+            <div class="config-note">
+                <i class="fas fa-info-circle"></i>
+                Using Gemini 1.5 Flash (Free Tier). Your API key is stored locally.
+                <a href="https://makersuite.google.com/app/apikey" target="_blank" style="color: var(--primary); margin-left: 0.5rem;">
+                    Get Free API Key
+                </a>
             </div>
         </div>
         
@@ -728,7 +826,7 @@
             <div class="script-header">
                 <h3 class="script-title">
                     <i class="fas fa-scroll"></i>
-                    Generated Podcast Script
+                    AI-Generated Podcast Script
                 </h3>
                 <button class="copy-btn" id="copyScriptBtn">
                     <i class="fas fa-copy"></i>
@@ -756,7 +854,7 @@
                     </div>
                     <div class="step-content">
                         <div class="step-title">Book Analysis</div>
-                        <div class="step-description">Analyzing book content and structure</div>
+                        <div class="step-description">Analyzing book content using Gemini AI</div>
                     </div>
                 </div>
                 
@@ -765,8 +863,8 @@
                         <i class="fas fa-robot"></i>
                     </div>
                     <div class="step-content">
-                        <div class="step-title">AI Script Writing</div>
-                        <div class="step-description">Generating educational podcast script</div>
+                        <div class="step-title">Script Generation</div>
+                        <div class="step-description">Creating 5-minute podcast script</div>
                     </div>
                 </div>
                 
@@ -776,7 +874,7 @@
                     </div>
                     <div class="step-content">
                         <div class="step-title">Voice Synthesis</div>
-                        <div class="step-description">Creating AI narration with Text-to-Speech</div>
+                        <div class="step-description">Preparing Text-to-Speech narration</div>
                     </div>
                 </div>
                 
@@ -865,7 +963,7 @@
             
             <button class="action-btn primary-btn" id="generateBtn" onclick="startPodcastGeneration()">
                 <i class="fas fa-magic"></i>
-                Generate 5-Min Podcast
+                Generate Podcast with AI
             </button>
             
             <button class="action-btn success-btn" id="viewPodcastsBtn" onclick="window.location.href='/'" style="display: none;">
@@ -879,13 +977,11 @@
             </button>
         </div>
     </main>
-
+  
     <script>
         // Configuration
         let currentBook = null;
         let generatedPodcast = null;
-        let audioPlayer = null;
-        let progressInterval = null;
         let isGenerating = false;
         let isPlaying = false;
         let currentUtterance = null;
@@ -895,80 +991,7 @@
         let elapsedTime = 0;
         let totalDuration = 300; // 5 minutes in seconds
         let updateInterval = null;
-
-        // Book-specific podcast scripts
-        const BOOK_SCRIPTS = {
-            "Pride and Prejudice": `Welcome to EduCast Studio's Five-Minute Literary Journey. Today, we're exploring Jane Austen's timeless masterpiece, "Pride and Prejudice."
-
-Published in 1813, this novel isn't just a romance—it's a brilliant social satire that critiques the marriage market of Regency England. Through the sharp-eyed Elizabeth Bennet, Austen examines how first impressions can be dangerously misleading.
-
-The central relationship between Elizabeth and Mr. Darcy shows how pride and prejudice can blind us to true character. Darcy's initial aloofness masks genuine integrity, while the charming Mr. Wickham's pleasant manners hide dishonesty.
-
-Austen's genius lies in her witty dialogue and keen observation of human nature. She explores themes of reputation, class, and the economic pressures facing women in a society where marriage was often a financial necessity rather than a romantic choice.
-
-Beyond the love story, "Pride and Prejudice" offers profound insights about self-knowledge and personal growth. Elizabeth's journey teaches us the importance of questioning our assumptions and recognizing our own biases.
-
-The novel remains incredibly relevant today because it speaks to universal experiences: navigating social expectations, seeking genuine connection, and learning to see beyond surface appearances.
-
-Austen's enduring popularity proves that great literature doesn't just entertain—it helps us understand ourselves and our relationships more deeply.
-
-Thank you for joining us. Until next time, keep reading and exploring the world through books.`,
-
-            "The Great Gatsby": `Welcome to EduCast Studio. Today, we're diving into F. Scott Fitzgerald's iconic novel, "The Great Gatsby."
-
-Set in the Roaring Twenties, this book captures the glamour and moral decay of the Jazz Age. Through narrator Nick Carraway's eyes, we enter the world of mysterious millionaire Jay Gatsby.
-
-Gatsby embodies the American Dream—the belief that anyone can reinvent themselves through hard work and determination. But Fitzgerald asks: What happens when that dream becomes corrupted by materialism and obsession?
-
-Gatsby's lavish parties and mysterious wealth are all aimed at winning back his lost love, Daisy Buchanan. But Daisy represents the old money aristocracy that Gatsby can never truly join, no matter how wealthy he becomes.
-
-The novel's famous symbols—the green light at the end of Daisy's dock, the eyes of Doctor T.J. Eckleburg—speak to themes of hope, judgment, and the elusive nature of the American Dream.
-
-Fitzgerald's lyrical prose captures both the excitement and the emptiness of the era. He shows us that beneath the glittering surface lies moral bankruptcy and shattered dreams.
-
-"The Great Gatsby" remains essential reading because it questions whether success is measured by material wealth or by something deeper and more meaningful.
-
-The novel warns that chasing an idealized past can prevent us from living fully in the present—a lesson as relevant today as it was in the 1920s.
-
-Thank you for listening. Remember, sometimes the most important journeys are the ones that help us understand what truly matters.`,
-
-            "Frankenstein": `Welcome to EduCast Studio. Today we're exploring Mary Shelley's groundbreaking novel, "Frankenstein."
-
-Written when Shelley was just 18, this 1818 masterpiece is considered the first true science fiction novel. But it's much more than a horror story—it's a profound meditation on creation, responsibility, and what it means to be human.
-
-Young scientist Victor Frankenstein becomes obsessed with creating life, but when he succeeds, he's horrified by his creature and abandons it. This act of rejection sets in motion the novel's tragic events.
-
-The creature, despite his monstrous appearance, is intelligent, sensitive, and capable of deep emotion. He learns to read, understands philosophy, and longs for companionship. His eloquent pleas for understanding challenge our assumptions about monsters and humanity.
-
-Shelley raises crucial questions: What responsibilities do creators have toward their creations? Can we play God without considering the consequences? And what happens when knowledge outpaces wisdom?
-
-The novel's structure creates multiple perspectives, forcing readers to consider who the real monster might be: the creature or his creator.
-
-"Frankenstein" warns against unchecked ambition and the dangers of pursuing knowledge without ethical boundaries. It speaks to modern concerns about artificial intelligence, genetic engineering, and scientific responsibility.
-
-Shelley's work reminds us that true horror often comes not from monsters, but from human failings: abandonment, prejudice, and the refusal to take responsibility for our actions.
-
-This pioneering novel continues to shape how we think about science, ethics, and our relationship with technology.
-
-Thank you for joining us. Remember that with great power comes great responsibility—a lesson Victor Frankenstein learned too late.`
-        };
-
-        // Default script for other books
-        const DEFAULT_SCRIPT = `Welcome to EduCast Studio's Five-Minute Literary Journey. Today, we're exploring "[BOOK_TITLE]."
-
-This work stands as an important contribution to literature, offering insights into the human condition and the society from which it emerged.
-
-The novel explores themes that resonate across time and culture: the search for meaning, the complexities of human relationships, and our place in the world.
-
-Through its characters and narrative, "[BOOK_TITLE]" invites us to consider fundamental questions about identity, morality, and what it means to live a meaningful life.
-
-Good literature doesn't just tell a story—it helps us understand ourselves and others more deeply. It challenges our assumptions and expands our perspectives.
-
-"[BOOK_TITLE]" remains relevant because it speaks to universal human experiences: love and loss, hope and disappointment, the struggle for self-understanding.
-
-The best books are those that stay with us long after we've finished reading them, continuing to shape how we see the world.
-
-Thank you for joining us for this brief exploration. May it inspire you to read, reflect, and discover the transformative power of literature.`;
+        let geminiApiKey = '';
 
         // Initialize page
         document.addEventListener('DOMContentLoaded', function() {
@@ -984,6 +1007,13 @@ Thank you for joining us for this brief exploration. May it inspire you to read,
             if (!selectedBook) {
                 window.location.href = '/collections';
                 return;
+            }
+            
+            // Load saved API key
+            const savedApiKey = localStorage.getItem('geminiApiKey');
+            if (savedApiKey) {
+                document.getElementById('apiKeyInput').value = savedApiKey;
+                geminiApiKey = savedApiKey;
             }
             
             try {
@@ -1013,6 +1043,26 @@ Thank you for joining us for this brief exploration. May it inspire you to read,
             }
         });
 
+        // Save API key
+        function saveApiKey() {
+            const apiKey = document.getElementById('apiKeyInput').value.trim();
+            if (!apiKey) {
+                showError('Please enter your Gemini API key');
+                return;
+            }
+            
+            // Basic validation
+            if (!apiKey.startsWith('AIza')) {
+                showError('Invalid API key format. Gemini API keys start with "AIza"');
+                return;
+            }
+            
+            geminiApiKey = apiKey;
+            localStorage.setItem('geminiApiKey', apiKey);
+            
+            showNotification('API key saved successfully!', 'success');
+        }
+
         // Show TTS notice
         function showTTSNotice() {
             document.getElementById('ttsNotice').style.display = 'block';
@@ -1026,15 +1076,7 @@ Thank you for joining us for this brief exploration. May it inspire you to read,
                 return;
             }
             
-            // Get available voices
-            let voices = speechSynthesis.getVoices();
-            if (voices.length === 0) {
-                speechSynthesis.addEventListener('voiceschanged', function() {
-                    voices = speechSynthesis.getVoices();
-                });
-            }
-            
-            // Initialize audio player UI (for progress simulation)
+            // Initialize audio player UI
             initializeAudioUI();
         }
 
@@ -1047,7 +1089,7 @@ Thank you for joining us for this brief exploration. May it inspire you to read,
             document.getElementById('volumeSlider').addEventListener('input', setVolume);
             document.getElementById('audioProgressBar').addEventListener('click', setAudioProgress);
             
-            // Initially disable controls (will be enabled when podcast is ready)
+            // Initially disable controls
             document.getElementById('playPauseBtn').disabled = true;
             document.getElementById('rewindBtn').disabled = true;
             document.getElementById('forwardBtn').disabled = true;
@@ -1101,12 +1143,19 @@ Thank you for joining us for this brief exploration. May it inspire you to read,
         async function startPodcastGeneration() {
             if (isGenerating) return;
             
+            // Check if API key is set
+            if (!geminiApiKey) {
+                showError('Please enter your Gemini API key first');
+                document.getElementById('apiKeyInput').focus();
+                return;
+            }
+            
             isGenerating = true;
             const generateBtn = document.getElementById('generateBtn');
             const originalText = generateBtn.innerHTML;
             
             // Update UI for generation
-            generateBtn.innerHTML = '<div class="loading-spinner"></div> Generating...';
+            generateBtn.innerHTML = '<div class="loading-spinner"></div> Generating with AI...';
             generateBtn.disabled = true;
             
             // Hide error message
@@ -1119,8 +1168,8 @@ Thank you for joining us for this brief exploration. May it inspire you to read,
             simulateProgress();
             
             try {
-                // Generate high-quality educational podcast with TTS
-                await generatePodcastWithTTS();
+                // Generate podcast with Gemini API
+                await generatePodcastWithGemini();
                 
             } catch (error) {
                 console.error('Generation error:', error);
@@ -1138,63 +1187,223 @@ Thank you for joining us for this brief exploration. May it inspire you to read,
             }
         }
 
-        // Generate podcast with Text-to-Speech
-        async function generatePodcastWithTTS() {
-            // Simulate realistic processing time
-            await new Promise(resolve => setTimeout(resolve, 3000));
-            
-            // Get or generate high-quality script
-            podcastScript = getBookScript(currentBook.title, currentBook.author);
-            
-            // Create podcast data
-            const podcast = {
-                id: `podcast-${Date.now()}`,
-                title: `5-Minute Summary: ${currentBook.title}`,
-                author: currentBook.author || 'Unknown Author',
-                description: `An educational podcast exploring "${currentBook.title}"`,
-                duration: '5:00',
-                script: podcastScript,
-                status: 'completed',
-                created_at: new Date().toISOString(),
-                book_id: currentBook.id,
-                usesTTS: true
-            };
-            
-            generatedPodcast = podcast;
-            
-            // Display the high-quality script
-            displayScript(podcastScript);
-            
-            // Complete generation
-            completeGeneration();
-            
-            // Show audio player with TTS controls
-            showAudioPlayer(podcast);
-            
-            // Update podcasts in localStorage
-            updateLocalPodcasts(podcast);
-        }
-
-        // Get script for book
-        function getBookScript(bookTitle, author) {
-            // Check if we have a pre-written script for this book
-            if (BOOK_SCRIPTS[bookTitle]) {
-                return BOOK_SCRIPTS[bookTitle];
+        // Generate podcast with Gemini API - FIXED VERSION
+        async function generatePodcastWithGemini() {
+            if (!geminiApiKey) {
+                throw new Error('API key not configured');
             }
             
-            // Generate a high-quality script for other books
-            return DEFAULT_SCRIPT.replace('[BOOK_TITLE]', bookTitle);
+            // Update status
+            updateStatus('Connecting to Gemini API...');
+            
+            // Prepare the prompt for Gemini
+            const prompt = createPodcastPrompt(currentBook);
+            
+            try {
+                // Call Gemini API - USING CORRECT MODEL NAME
+                const response = await callGeminiAPI(prompt);
+                
+                if (!response || !response.candidates || !response.candidates[0] || !response.candidates[0].content || !response.candidates[0].content.parts || !response.candidates[0].content.parts[0]) {
+                    throw new Error('Invalid response from Gemini API');
+                }
+                
+                // Extract the generated script
+                podcastScript = response.candidates[0].content.parts[0].text;
+                
+                // Create podcast data
+                const podcast = {
+                    id: `podcast-${Date.now()}`,
+                    title: `5-Minute Summary: ${currentBook.title}`,
+                    author: currentBook.author || 'Unknown Author',
+                    description: `An educational podcast exploring "${currentBook.title}"`,
+                    duration: '5:00',
+                    script: podcastScript,
+                    status: 'completed',
+                    created_at: new Date().toISOString(),
+                    book_id: currentBook.id,
+                    usesTTS: true,
+                    generated_by: 'Gemini AI'
+                };
+                
+                generatedPodcast = podcast;
+                
+                // Display the generated script
+                displayScript(podcastScript);
+                
+                // Complete generation
+                completeGeneration();
+                
+                // Show audio player with TTS controls
+                showAudioPlayer(podcast);
+                
+                // Update podcasts in localStorage
+                updateLocalPodcasts(podcast);
+                
+            } catch (error) {
+                console.error('Gemini API error:', error);
+                
+                // Fallback to a basic script if API fails
+                if (error.message.includes('quota') || error.message.includes('limit') || error.message.includes('not found') || error.message.includes('not supported')) {
+                    showError('API issue detected. Using fallback script.');
+                    podcastScript = createFallbackScript(currentBook);
+                    
+                    // Create podcast data with fallback script
+                    const podcast = {
+                        id: `podcast-${Date.now()}`,
+                        title: `5-Minute Summary: ${currentBook.title}`,
+                        author: currentBook.author || 'Unknown Author',
+                        description: `An educational podcast exploring "${currentBook.title}"`,
+                        duration: '5:00',
+                        script: podcastScript,
+                        status: 'completed',
+                        created_at: new Date().toISOString(),
+                        book_id: currentBook.id,
+                        usesTTS: true,
+                        generated_by: 'Fallback'
+                    };
+                    
+                    generatedPodcast = podcast;
+                    
+                    // Display the fallback script
+                    displayScript(podcastScript);
+                    
+                    // Complete generation
+                    completeGeneration();
+                    
+                    // Show audio player with TTS controls
+                    showAudioPlayer(podcast);
+                    
+                    // Update podcasts in localStorage
+                    updateLocalPodcasts(podcast);
+                    
+                } else {
+                    throw error;
+                }
+            }
+        }
+
+        // Create podcast prompt for Gemini
+        function createPodcastPrompt(book) {
+            return `Create a 5-minute educational podcast script about the book "${book.title}" by ${book.author || 'an unknown author'}.
+
+Book Details:
+- Title: ${book.title}
+- Author: ${book.author || 'Unknown'}
+- Genre: ${book.genre || 'Not specified'}
+- Published: ${book.year || 'Unknown year'}
+- Description: ${book.description || 'No description available'}
+
+Instructions:
+1. Create an engaging 5-minute podcast script (approximately 600-800 words)
+2. Start with an engaging introduction: "Welcome to EduCast Studio's Five-Minute Literary Journey"
+3. Focus on key themes, characters, and the book's significance
+4. Explain why this book is important to read today
+5. End with a conclusion that summarizes the main points
+6. Keep it educational but conversational
+7. Use a friendly, professional tone suitable for students and book lovers
+8. Format with clear paragraphs but no markdown
+
+Make the script informative, engaging, and suitable for a 5-minute educational podcast.`;
+        }
+
+        // Call Gemini API - UPDATED WITH CORRECT MODEL
+        async function callGeminiAPI(prompt) {
+            // Try different API endpoints and models
+            const apiEndpoints = [
+                {
+                    url: `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${geminiApiKey}`,
+                    model: 'gemini-pro'
+                },
+                {
+                    url: `https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent?key=${geminiApiKey}`,
+                    model: 'gemini-pro'
+                },
+                {
+                    url: `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.0-pro:generateContent?key=${geminiApiKey}`,
+                    model: 'gemini-1.0-pro'
+                }
+            ];
+            
+            let lastError = null;
+            
+            for (const endpoint of apiEndpoints) {
+                try {
+                    console.log(`Trying API endpoint with model: ${endpoint.model}`);
+                    
+                    const requestBody = {
+                        contents: [{
+                            parts: [{
+                                text: prompt
+                            }]
+                        }],
+                        generationConfig: {
+                            temperature: 0.7,
+                            topK: 40,
+                            topP: 0.95,
+                            maxOutputTokens: 1024,
+                        }
+                    };
+                    
+                    const response = await fetch(endpoint.url, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(requestBody)
+                    });
+                    
+                    if (response.ok) {
+                        const data = await response.json();
+                        console.log(`Success with model: ${endpoint.model}`);
+                        return data;
+                    } else {
+                        const errorData = await response.json().catch(() => ({}));
+                        lastError = new Error(errorData.error?.message || `API request failed with status ${response.status} for model ${endpoint.model}`);
+                        console.warn(`Failed with model ${endpoint.model}:`, lastError.message);
+                    }
+                } catch (error) {
+                    lastError = error;
+                    console.warn(`Error with model ${endpoint.model}:`, error.message);
+                }
+                
+                // Wait a bit before trying next endpoint
+                await new Promise(resolve => setTimeout(resolve, 500));
+            }
+            
+            throw lastError || new Error('All API endpoints failed');
+        }
+
+        // Create fallback script if API fails
+        function createFallbackScript(book) {
+            return `Welcome to EduCast Studio's Five-Minute Literary Journey. Today, we're exploring "${book.title}" by ${book.author || 'an unknown author'}.
+
+This ${book.genre ? book.genre + ' ' : ''}work offers valuable insights into the human experience. Through its narrative, we encounter themes that resonate across time and culture.
+
+The book invites us to consider important questions about life, relationships, and our place in the world. Its characters and situations reflect universal human experiences.
+
+Good literature helps us understand different perspectives and expands our worldview. "${book.title}" contributes to this understanding by exploring ${book.genre ? book.genre.toLowerCase() : 'important'} themes.
+
+Whether you're a student, a book lover, or someone seeking knowledge, this book has something to offer. It reminds us of the power of storytelling to educate and inspire.
+
+The best books stay with us long after we've finished reading them, continuing to shape how we see the world and understand ourselves.
+
+Thank you for joining us for this brief exploration. May it inspire you to read, reflect, and discover the transformative power of literature.`;
+        }
+
+        // Update status message
+        function updateStatus(message) {
+            document.getElementById('statusMessage').textContent = message;
         }
 
         // Simulate progress
         function simulateProgress() {
             let progress = 0;
             const steps = [
-                { progress: 20, message: "Analyzing literary significance...", step: 1 },
-                { progress: 40, message: "Creating educational content...", step: 2 },
-                { progress: 60, message: "Setting up Text-to-Speech...", step: 3 },
-                { progress: 80, message: "Preparing narration...", step: 4 },
-                { progress: 100, message: "Finalizing 5-minute podcast...", step: 5 }
+                { progress: 20, message: "Analyzing book with Gemini AI...", step: 1 },
+                { progress: 40, message: "Generating podcast script...", step: 2 },
+                { progress: 60, message: "Formatting for 5-minute duration...", step: 3 },
+                { progress: 80, message: "Preparing Text-to-Speech...", step: 4 },
+                { progress: 100, message: "Finalizing educational podcast...", step: 5 }
             ];
             
             let currentStep = 0;
@@ -1301,7 +1510,7 @@ Thank you for joining us for this brief exploration. May it inspire you to read,
             isGenerating = false;
             
             // Show success notification
-            showNotification('Podcast generated successfully! Ready to play.', 'success');
+            showNotification('Podcast generated successfully!', 'success');
         }
 
         // Show audio player with TTS controls
@@ -1349,11 +1558,10 @@ Thank you for joining us for this brief exploration. May it inspire you to read,
             // Create new utterance
             currentUtterance = new SpeechSynthesisUtterance(podcastScript);
             
-            // Configure voice (try to get a good voice)
+            // Configure voice
             const voices = speechSynthesis.getVoices();
             const preferredVoices = voices.filter(v => 
-                v.lang.startsWith('en-') && 
-                (v.name.includes('Google') || v.name.includes('Samantha') || v.name.includes('Alex'))
+                v.lang.startsWith('en-')
             );
             
             if (preferredVoices.length > 0) {
@@ -1362,7 +1570,7 @@ Thank you for joining us for this brief exploration. May it inspire you to read,
                 currentUtterance.voice = voices[0];
             }
             
-            // Set rate and pitch for podcast-like narration
+            // Set rate and pitch
             currentUtterance.rate = 1.0;
             currentUtterance.pitch = 1.0;
             currentUtterance.volume = document.getElementById('volumeSlider').value / 100;
@@ -1444,7 +1652,6 @@ Thank you for joining us for this brief exploration. May it inspire you to read,
         // Rewind audio
         function rewindAudio() {
             if (isPlaying) {
-                // Pause, adjust time, then resume
                 const wasPlaying = isPlaying;
                 pauseTTS();
                 
@@ -1453,11 +1660,9 @@ Thank you for joining us for this brief exploration. May it inspire you to read,
                 updateProgressDisplay();
                 
                 if (wasPlaying) {
-                    // Resume from new position
                     setTimeout(playTTS, 100);
                 }
             } else {
-                // Just adjust time
                 elapsedTime = Math.max(0, elapsedTime - 10);
                 updateProgressDisplay();
             }
@@ -1466,7 +1671,6 @@ Thank you for joining us for this brief exploration. May it inspire you to read,
         // Forward audio
         function forwardAudio() {
             if (isPlaying) {
-                // Pause, adjust time, then resume
                 const wasPlaying = isPlaying;
                 pauseTTS();
                 
@@ -1475,11 +1679,9 @@ Thank you for joining us for this brief exploration. May it inspire you to read,
                 updateProgressDisplay();
                 
                 if (wasPlaying) {
-                    // Resume from new position
                     setTimeout(playTTS, 100);
                 }
             } else {
-                // Just adjust time
                 elapsedTime = Math.min(totalDuration, elapsedTime + 10);
                 updateProgressDisplay();
             }
@@ -1536,7 +1738,8 @@ Thank you for joining us for this brief exploration. May it inspire you to read,
                 created_at: podcast.created_at,
                 coverColor: generateColor(),
                 book_id: podcast.book_id,
-                usesTTS: true
+                usesTTS: true,
+                generated_by: podcast.generated_by || 'Gemini AI'
             });
             
             localStorage.setItem('userPodcasts', JSON.stringify(userPodcasts));
@@ -1548,11 +1751,11 @@ Thank you for joining us for this brief exploration. May it inspire you to read,
                 author: podcast.author,
                 script: podcast.script,
                 duration: podcast.duration,
-                usesTTS: true
+                usesTTS: true,
+                generated_by: podcast.generated_by || 'Gemini AI'
             }));
             
-            // Show success message
-            console.log('Podcast saved with TTS capability');
+            console.log('Podcast saved successfully');
         }
 
         // Generate random color
